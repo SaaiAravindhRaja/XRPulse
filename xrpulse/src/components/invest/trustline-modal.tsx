@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { useWallet } from "@/context/wallet-context"
 import { Loader2, CheckCircle2 } from "lucide-react"
+import confetti from "canvas-confetti"
 import { recordInvestment } from "@/app/actions"
 import { toast } from "sonner"
 
@@ -84,6 +85,12 @@ export function TrustLineModal({ asset, open, onOpenChange }: TrustLineModalProp
                 throw new Error("Payment Failed on Ledger")
             }
             toast.success("Payment Confirmed on Ledger")
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#10b981', '#3b82f6', '#f59e0b']
+            })
 
             // 3. Database: Record Investment
             // -----------------------------------------------------

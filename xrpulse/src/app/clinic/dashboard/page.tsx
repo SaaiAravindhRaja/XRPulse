@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase"
 import { AssetCard } from "@/components/assets/asset-card"
 import { Loader2, PlusCircle } from "lucide-react"
 import Link from "next/link"
+import { useToast } from "@/hooks/use-toast"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
@@ -25,22 +26,53 @@ export default function ClinicDashboard() {
                 return
             }
 
+            // Fetch assets with their investments
             const { data, error } = await supabase
                 .from('assets')
-                .select('*')
+                .select(`
+                    *,
+                    investments (
+                        amount_invested
+                    )
+                `)
                 .eq('clinic_wallet', walletAddress)
                 .order('created_at', { ascending: false })
 
             if (error) {
                 console.error("Error fetching assets:", error)
             } else {
-                setAssets(data || [])
+                // Calculate total funding for each asset
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const enrichedData = data?.map((asset: any) => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const totalFunding = asset.investments?.reduce((sum: number, inv: any) => sum + inv.amount_invested, 0) || 0
+                    return { ...asset, calculated_funding: totalFunding }
+                })
+                setAssets(enrichedData || [])
             }
             setIsLoading(false)
         }
 
         fetchAssets()
     }, [walletAddress])
+
+    const { toast } = useToast()
+
+    const handleWithdraw = (amount: number) => {
+        if (amount <= 0) {
+            toast({
+                title: "No Funds Available",
+                description: "This asset has not received any funding yet.",
+                variant: "destructive"
+            })
+            return
+        }
+
+        toast({
+            title: "Withdrawal Initiated",
+            description: `Requesting transfer of $${amount.toLocaleString()} RLUSD to linked bank account.`,
+        })
+    }
 
     return (
         <div className="min-h-screen bg-slate-50">
@@ -94,10 +126,11 @@ export default function ClinicDashboard() {
                                 description={asset.description}
                                 imageUrl={asset.image_url}
                                 fundingGoal={asset.funding_goal_rlusd}
-                                currentFunding={0} // TODO: Calculate from investments
+                                currentFunding={asset.calculated_funding || 0}
                                 roi={parseFloat(asset.description.match(/ROI: ([\d.]+)%/)?.[1] || '0')}
                                 status={asset.status}
-                                actionLabel="View Details"
+                                actionLabel={asset.calculated_funding > 0 ? "Withdraw Funds" : "Manage Asset"}
+                                onAction={() => handleWithdraw(asset.calculated_funding || 0)}
                             />
                         ))}
                     </div>

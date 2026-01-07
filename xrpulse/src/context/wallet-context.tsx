@@ -35,11 +35,24 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(false)
     const { toast } = useToast()
 
-    // Auto-connect if stored in localStorage (optional for later)
+    // Auto-connect if stored in localStorage
     useEffect(() => {
         const init = async () => {
             try {
                 await xrplClient.connect()
+
+                const savedSeed = localStorage.getItem('xrpulse_seed')
+                if (savedSeed) {
+                    const savedWallet = Wallet.fromSeed(savedSeed)
+                    setWallet(savedWallet)
+                    setProfile({
+                        walletAddress: savedWallet.address,
+                        role: (localStorage.getItem('xrpulse_role') as UserProfile['role']) || null
+                    })
+                    // Fetch balance
+                    const balance = await xrplClient.client.getXrpBalance(savedWallet.address)
+                    setBalance(balance.toString())
+                }
             } catch (e) {
                 console.error("Failed to connect to XRPL on init", e)
             }
@@ -57,6 +70,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             const newWallet = Wallet.generate()
             setWallet(newWallet)
 
+            // Persist
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('xrpulse_seed', newWallet.seed || '')
+                // Default role to null until selected, but we can update it later.
+            }
+
             // 2. Fund it (so we can do transactions)
             toast({
                 title: "Funding Wallet...",
@@ -65,7 +84,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
             try {
                 // Ensure we are connected before asking faucet
-                await xrplClient.connect()
+                await xrplClient.client.connect()
 
                 // We use the client to fund. Note: This might take a few seconds.
                 console.log("Requesting funding from XRPL Faucet...")
@@ -113,6 +132,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         setWallet(null)
         setProfile(null)
         setBalance('0')
+        localStorage.removeItem('xrpulse_seed')
+        localStorage.removeItem('xrpulse_role')
     }
 
     return (

@@ -26,10 +26,13 @@ export default function Home() {
 
 
 
-      if (data?.role === 'clinic') {
-        router.push('/clinic/dashboard')
-      } else if (data?.role === 'investor') {
-        router.push('/investor/dashboard')
+      if (data?.role) {
+        localStorage.setItem('xrpulse_role', data.role)
+        if (data.role === 'clinic') {
+          router.push('/clinic/dashboard')
+        } else if (data.role === 'investor') {
+          router.push('/investor/dashboard')
+        }
       }
     }
 
@@ -53,6 +56,8 @@ export default function Home() {
       console.error("Failed to create profile", error)
       return
     }
+
+    localStorage.setItem('xrpulse_role', role)
 
     // Redirect
     if (role === 'clinic') router.push('/clinic/dashboard')

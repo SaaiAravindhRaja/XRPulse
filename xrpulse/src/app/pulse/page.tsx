@@ -1,10 +1,9 @@
-
 "use client"
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Activity, ArrowUp, DollarSign, Users, Zap } from "lucide-react"
-import { LineChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis, AreaChart, Area } from "recharts"
+import { ResponsiveContainer, Tooltip, XAxis, YAxis, AreaChart, Area } from "recharts"
 import { supabase } from "@/lib/supabase"
 
 // Simulated Heartbeat Data
@@ -31,6 +30,7 @@ const generateHeartbeat = () => {
 
 // Simulated Transactions
 const TransactionTicker = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [txs, setTxs] = useState<any[]>([])
 
     useEffect(() => {
@@ -48,13 +48,13 @@ const TransactionTicker = () => {
 
     return (
         <div className="space-y-4">
-            {txs.map((tx, i) => (
+            {txs.map((tx) => (
                 <div key={tx.id} className="flex justify-between items-center p-3 bg-slate-900/50 rounded-lg border border-slate-700/50 animate-in fade-in slide-in-from-right-4 duration-500">
                     <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-full ${tx.type === 'INVESTMENT' ? 'bg-emerald-500/20 text-emerald-400' :
+                        <div className={`p - 2 rounded - full ${tx.type === 'INVESTMENT' ? 'bg-emerald-500/20 text-emerald-400' :
                                 tx.type === 'YIELD_PAYOUT' ? 'bg-blue-500/20 text-blue-400' :
                                     'bg-amber-500/20 text-amber-400'
-                            }`}>
+                            } `}>
                             {tx.type === 'INVESTMENT' ? <ArrowUp size={16} /> :
                                 tx.type === 'YIELD_PAYOUT' ? <DollarSign size={16} /> :
                                     <Activity size={16} />}
@@ -199,7 +199,7 @@ export default function PulsePage() {
                                     </defs>
                                     <XAxis dataKey="time" hide />
                                     <YAxis hide domain={['auto', 'auto']} />
-                                    <Tooltiple contentStyle={{ backgroundColor: '#1e293b', border: 'none' }} />
+                                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none' }} />
                                     <Area
                                         type="monotone"
                                         dataKey="value"
