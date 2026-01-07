@@ -10,63 +10,45 @@
 - [x] **Config:** Typescript, ESLint, Environment Variables.
 - [x] **Core Libs:** `xrpl`, `@supabase/supabase-js`, `framer-motion`, `lucide-react`.
 
-## Phase 1: The Pulse Core (Infrastructure)
-Establish the heartbeat of the application: Connection to XRPL and Data Sync.
+## Phase 1: The Pulse Core (Completed)
+- [x] **Supabase Setup:** Schema for Profiles, Assets, Investments.
+- [x] **XRPL Client:** Singleton for Testnet listening.
+- [x] **Wallet Provider:** simple Context for managing connection.
+- [x] **Mock Data:** Seeded RLUSD Issuer + 3 Assets (X-Ray, CT, Mobile).
 
-- [ ] **Supabase Setup:**
-    - `profiles`: Links Wallet Address to User Metadata (Role, Name, Clinic ID).
-    - `assets`: Stores off-chain metadata (MRI Specs, Photos, Location).
-    - `investments`: Tracks off-chain history for quick UI (Synced with on-chain).
-- [ ] **XRPL Client (`lib/xrpl.ts`):** 
-    - Robust Singleton for connecting to Testnet.
-    - Helper functions for `submitTransaction` and `subscribe`.
-- [ ] **Wallet Provider (`context/wallet-context.tsx`):**
-    - Manage Connected State.
-    - Handle Signing (using `xrpl.Wallet` for local dev speed, or extension if needed).
-    - **Mock Mode:** Pre-funded wallets for easy demoing.
+## Phase 2: Slice A - Identity (Completed)
+- [x] **Onboarding Flow:** Connect Wallet -> Role Selection.
+- [x] **Dashboard Shells:** Clinic & Investor views routed correctly.
 
-## Phase 2: Slice A - Identity (The User Pulse)
-- [ ] **Onboarding Flow:**
-    - Landing Page: "Pulse of Healthcare Finance".
-    - Login: Connect Wallet.
-    - Profile Creation: "Are you identifying as a Clinic or an Liquidity Provider?"
-- [ ] **Dashboard Shells:**
-    - **Clinic View:** Asset Management.
-    - **Investor View:** Portfolio Performance.
+---
 
-## Phase 3: Slice B - Asset Tokenization (The Creation)
-The "Clinic" creates a Pulse (Asset).
+## Phase 3: Clinic - The Asset Studio (UI)
+**Goal:** Create a beautiful, form-based interface for Clinics to list equipment.
+- [ ] **Upload Form:** Form for Title, Description, Cost, ROI, Image URL.
+- [ ] **Design:** Shadcn Cards, Input fields with "Medical" styling (clean, sterile, precise).
 
-- [ ] **Asset Studio UI:**
-    - Form to upload Asset Image (Supabase Storage).
-    - Set Funding Goal (e.g., 500k RLUSD).
-    - Set Fractional Supply (e.g., 1000 Tokens).
-- [ ] **On-Chain Logic (`lib/actions/tokenize.ts`):**
-    - **Step 1:** Mint NFT (URIToken) representing the physical validator.
-    - **Step 2:** AccountSet (Configure Issuer).
-    - **Step 3:** Payment (Issue the Fractional Tokens to self).
-    - **Step 4:** Create Offer / Setup Automated Market Maker (AMM) or simple Sell Offer.
+## Phase 4: Clinic - The Tokenization Engine (XRPL)
+**Goal:** Connect the form to the XRP Ledger.
+- [ ] **Mint Logic (`lib/actions/mint.ts`):** 
+    - `NFTokenMint` (The Machine).
+    - `AccountSet` (Configure Issuer).
+    - `Payment` (Issue fractional `PULSE` tokens to self).
+- [ ] **Saving:** Store the `TokenID` and `CurrencyCode` in Supabase.
 
-## Phase 4: Slice C - Liquidity Injection (The Flow)
-The "Investor" injects capital (RLUSD).
+## Phase 5: Investor - The Marketplace (UI)
+**Goal:** A high-trust browsing experience for Investors.
+- [ ] **Asset Grid:** Cards showing "Funding Progress", "APY", and "Impact".
+- [ ] **Details View:** A deep dive modal showing the machine's specs and financial breakdown.
 
-- [ ] **Marketplace UI:**
-    - "Live Pulses" Grid.
-    - Real-time funding progress bars.
-- [ ] **Investment Logic:**
-    - **Trustline:** Investor adds Trustline for Asset Token.
-    - **Swap/Payment:** Investor sends RLUSD -> Clinic.
-    - **Receive:** Clinic sends Asset Token -> Investor.
-    - *Note:* We will use a simplified Direct Offer model for the MVP.
+## Phase 6: Investor - Check Writing (XRPL)
+**Goal:** The moment of funding.
+- [ ] **Trustline Button:** "Enable Trading for PULSE-XRAY".
+- [ ] **Invest Action:** 
+    - Sending `RLUSD` to the Clinic.
+    - Clinic sends `PULSE` tokens back (Simplified Swap).
+    - *Note:* We will use direct payments for the MVP speed.
 
-## Phase 5: The Heartbeat (Visualization & Yield)
-- [ ] **Yield Distribution Script:**
-    - "Simulate Monthly Revenue": Clinic pays 5% yield in RLUSD to all Asset Token Holders.
-- [ ] **The "Pulse" Visualizer:**
-    - Homepage component showing real-time ledger transactions as "heartbeats".
-    - Use `xrpl` stream to listen for account activity.
-
-## Phase 6: Final Polish
-- [ ] **Design System:** Deep Navy Backgrounds, Neon Green/Blue Accents ("Medical Tech").
-- [ ] **Error Handling:** Graceful failures with Toast notifications (Show Tx Hash!).
-- [ ] **Demo Prep:** Scripted walk-through.
+## Phase 7: The Pulse (Yield & Viz)
+**Goal:** Visualize the impact.
+- [ ] **Yield Script:** One-click button to distribute RLUSD dividends to all holders.
+- [ ] **Heartbeat Visualizer:** A component that beats with every ledger close.

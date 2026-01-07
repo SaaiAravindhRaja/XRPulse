@@ -18,7 +18,7 @@ export default function ClinicDashboard() {
                 <div className="bg-white p-6 rounded-xl shadow-sm border">
                     <h2 className="text-xl font-semibold mb-2">Welcome, {profile?.name || 'Clinic'}</h2>
                     <p className="text-slate-600 mb-6">Manage your medical listed assets here.</p>
-                    <Button>List New Equipment</Button>
+                    <Button onClick={() => window.location.href = '/clinic/create'}>List New Equipment</Button>
                 </div>
             </main>
         </div>
