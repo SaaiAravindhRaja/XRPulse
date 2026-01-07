@@ -53,6 +53,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
                     try {
                         const balance = await xrplClient.client.getXrpBalance(savedWallet.address)
                         setBalance(balance.toString())
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     } catch (err: any) {
                         console.warn("Could not fetch balance for saved wallet (might be unfunded):", err.message)
                         if (err.message && err.message.includes("Account not found")) {

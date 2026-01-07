@@ -7,7 +7,7 @@ import { ConnectWalletButton } from "@/components/auth/connect-wallet-button"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { AssetCard } from "@/components/assets/asset-card"
-import { Loader2 } from "lucide-react"
+import { Loader2, SearchX, PieChart } from "lucide-react"
 import { TrustLineModal } from "@/components/invest/trustline-modal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -31,14 +31,31 @@ export default function InvestorDashboard() {
 
     async function fetchMarketplace() {
         try {
-            const { data, error } = await supabase
+            // 1. Fetch Assets
+            const { data: assetsData, error: assetsError } = await supabase
                 .from('assets')
                 .select('*')
                 .eq('status', 'funding')
                 .order('created_at', { ascending: false })
 
-            if (error) throw error
-            setAssets(data || [])
+            if (assetsError) throw assetsError
+
+            // 2. Fetch All Investments (optimization: get all instead of N requests)
+            const { data: investmentsData } = await supabase
+                .from('investments')
+                .select('asset_id, amount_invested')
+
+            // 3. Merge
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const enrichedData = (assetsData || []).map((asset: any) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const assetInvestments = investmentsData?.filter((inv: any) => inv.asset_id === asset.id) || []
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const totalFunding = assetInvestments.reduce((sum: number, inv: any) => sum + inv.amount_invested, 0)
+                return { ...asset, calculated_funding: totalFunding }
+            })
+
+            setAssets(enrichedData)
         } catch (e) {
             console.error("Failed to fetch marketplace", e)
         } finally {
@@ -49,8 +66,8 @@ export default function InvestorDashboard() {
     async function fetchPortfolio() {
         if (!walletAddress) return
         try {
-            // Join investments with assets
-            const { data, error } = await supabase
+            // 1. Get My Investments (with Asset details)
+            const { data: myInvestments, error } = await supabase
                 .from('investments')
                 .select(`
                     *,
@@ -60,13 +77,29 @@ export default function InvestorDashboard() {
 
             if (error) throw error
 
-            // Map to flat structure for AssetCard, using the joined 'asset' data
+            // 2. Get Global Funding Layout (to show progress on card correctly)
+            const { data: allInvestments } = await supabase
+                .from('investments')
+                .select('asset_id, amount_invested')
+
+            // 3. Map
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const myAssets = data?.map((inv: any) => ({
-                ...inv.asset,
-                my_shares: inv.tokens_received,
-                my_invested: inv.amount_invested
-            })) || []
+            const myAssets = myInvestments?.map((inv: any) => {
+                // Calculate global funding for this asset
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const assetTotalFunding = allInvestments
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    ?.filter((i: any) => i.asset_id === inv.asset.id)
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    ?.reduce((sum: number, i: any) => sum + i.amount_invested, 0) || 0
+
+                return {
+                    ...inv.asset,
+                    calculated_funding: assetTotalFunding,
+                    my_shares: inv.tokens_received,
+                    my_invested: inv.amount_invested
+                }
+            }) || []
 
             setPortfolio(myAssets)
         } catch (e) {
@@ -107,9 +140,12 @@ export default function InvestorDashboard() {
                                 <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
                             </div>
                         ) : assets.length === 0 ? (
-                            <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-300">
-                                <h3 className="text-xl font-medium text-slate-500">No active assets found</h3>
-                                <p className="text-slate-400">Check back later for new listings.</p>
+                            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-dashed border-slate-300">
+                                <div className="bg-slate-50 p-4 rounded-full mb-4">
+                                    <SearchX className="w-8 h-8 text-slate-400" />
+                                </div>
+                                <h3 className="text-xl font-medium text-slate-800">No active assets found</h3>
+                                <p className="text-slate-500 max-w-sm text-center">There are currently no medical assets open for funding. Check back later.</p>
                             </div>
                         ) : (
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -120,7 +156,7 @@ export default function InvestorDashboard() {
                                         description={asset.description}
                                         imageUrl={asset.image_url}
                                         fundingGoal={asset.funding_goal_rlusd}
-                                        currentFunding={asset.current_funding_rlusd || 0}
+                                        currentFunding={asset.calculated_funding || 0}
                                         roi={8.5}
                                         sharePrice={asset.share_price_rlusd || 100}
                                         status={asset.status}
@@ -137,10 +173,13 @@ export default function InvestorDashboard() {
 
                     <TabsContent value="portfolio">
                         {portfolio.length === 0 ? (
-                            <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-300">
-                                <h3 className="text-xl font-medium text-slate-500">Your portfolio is empty</h3>
-                                <p className="text-slate-400 mb-4">You haven&apos;t invested in any assets yet.</p>
-                                <Button variant="outline" onClick={() => (document.querySelector('[value="marketplace"]') as HTMLElement)?.click()}>
+                            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-dashed border-slate-300">
+                                <div className="bg-slate-50 p-4 rounded-full mb-4">
+                                    <PieChart className="w-8 h-8 text-slate-400" />
+                                </div>
+                                <h3 className="text-xl font-medium text-slate-800">Your portfolio is empty</h3>
+                                <p className="text-slate-500 mb-6 text-center max-w-sm">You haven&apos;t invested in any assets yet. Start building your medical real estate portfolio today.</p>
+                                <Button onClick={() => (document.querySelector('[value="marketplace"]') as HTMLElement)?.click()}>
                                     Browse Marketplace
                                 </Button>
                             </div>
@@ -153,7 +192,7 @@ export default function InvestorDashboard() {
                                         description={asset.description}
                                         imageUrl={asset.image_url}
                                         fundingGoal={asset.funding_goal_rlusd}
-                                        currentFunding={asset.current_funding_rlusd || 0}
+                                        currentFunding={asset.calculated_funding || 0}
                                         roi={8.5}
                                         sharePrice={asset.share_price_rlusd || 100}
                                         status="active" // Mark as active for portfolio
