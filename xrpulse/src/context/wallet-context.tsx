@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { xrplClient } from '@/lib/xrpl'
 import { Wallet } from 'xrpl'
+import { useToast } from "@/hooks/use-toast"
 
 // Basic User Profile Type
 interface UserProfile {
@@ -15,20 +16,23 @@ interface UserProfile {
 interface WalletContextType {
     isConnected: boolean
     walletAddress: string | null
+    wallet: Wallet | null
     balance: string
     profile: UserProfile | null
     connectWallet: () => Promise<void>
     disconnectWallet: () => void
     isLoading: boolean
+    signTransaction: (tx: any) => Promise<any>
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined)
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-    const [walletAddress, setWalletAddress] = useState<string | null>(null)
+    const [wallet, setWallet] = useState<Wallet | null>(null)
     const [balance, setBalance] = useState<string>('0')
     const [profile, setProfile] = useState<UserProfile | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+    const { toast } = useToast()
 
     // Auto-connect if stored in localStorage (optional for later)
     useEffect(() => {
@@ -45,46 +49,78 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     const connectWallet = async () => {
         setIsLoading(true)
         try {
-            // TODO: Integrate actual Wallet Connectors (Crossmark / GemWallet)
-            // For Phase 1 Mock: Generate a random wallet or use a hardcoded one for dev.
-            console.log("Mocking Wallet Connection...")
+            console.log("Generating Mock Wallet for Testnet...")
 
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 800))
+            // 1. Generate Wallet
+            // In a real app, this would come from GemWallet/Crossmark
+            const newWallet = Wallet.generate()
+            setWallet(newWallet)
 
-            // MOCK WALLET FOR TESTNET
-            const mockWallet = Wallet.generate()
-            setWalletAddress(mockWallet.address)
-            setBalance('1000') // Virtual Balance
+            // 2. Fund it (so we can do transactions)
+            toast({
+                title: "Funding Wallet...",
+                description: "Requesting Testnet XRP for gas fees.",
+            })
 
-            // Check Supabase for existing profile (To be implemented in Slice A)
+            try {
+                // We use the client to fund. Note: This might take a few seconds.
+                console.log("Requesting funding from XRPL Faucet...")
+                const fundResult = await xrplClient.client.fundWallet(newWallet)
+
+                console.log("Funded:", fundResult)
+                setBalance(fundResult.balance.toString())
+            } catch (err) {
+                console.warn("Funding failed or timed out, proceeding with mock balance", err)
+                setBalance('1000')
+            }
+
+            // 3. Set Profile
             setProfile({
-                walletAddress: mockWallet.address,
-                role: null, // User needs to select
+                walletAddress: newWallet.address,
+                role: null,
+            })
+
+            toast({
+                title: "Wallet Connected",
+                description: `Address: ${newWallet.address.slice(0, 6)}...`,
             })
 
         } catch (error) {
             console.error("Connection failed", error)
+            toast({
+                title: "Connection Failed",
+                description: "Could not generate wallet.",
+                variant: "destructive"
+            })
         } finally {
             setIsLoading(false)
         }
     }
 
+    const signTransaction = async (tx: any) => {
+        if (!wallet) throw new Error("No wallet connected")
+
+        // Local Signing (since we hold the keys in memory for this demo)
+        return wallet.sign(tx)
+    }
+
     const disconnectWallet = () => {
-        setWalletAddress(null)
+        setWallet(null)
         setProfile(null)
         setBalance('0')
     }
 
     return (
         <WalletContext.Provider value={{
-            isConnected: !!walletAddress,
-            walletAddress,
+            isConnected: !!wallet,
+            walletAddress: wallet?.address || null,
+            wallet,
             balance,
             profile,
             connectWallet,
             disconnectWallet,
-            isLoading
+            isLoading,
+            signTransaction
         }}>
             {children}
         </WalletContext.Provider>
