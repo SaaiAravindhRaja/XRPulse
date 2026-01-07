@@ -38,25 +38,37 @@ export default function CreateAssetPage() {
 
         setIsLoading(true)
         try {
-            // 1. XRPL: Mint the NFT (The Physical Asset)
-            // ----------------------------------------------------------------
-            const { convertStringToHex } = require('xrpl') // Dynamic import or use if available
+            const { convertStringToHex } = require('xrpl')
             const hexURI = Buffer.from(formData.imageUrl || 'xrpulse-asset').toString('hex')
 
+            // AUTO-FILL & SIGN Setup
+            const { xrplClient } = await import('@/lib/xrpl')
+            const client = xrplClient.client
+            if (!client.isConnected()) await client.connect()
+
+
+            // 1. XRPL: Configure Account as Issuer (Enable DefaultRipple)
+            // ----------------------------------------------------------------
+            // REQUIRED for Token Issuance
+            const accountSetTx = {
+                TransactionType: "AccountSet",
+                Account: wallet.address,
+                SetFlag: 8, // tfDefaultRipple
+            }
+            const preparedAccountSet = await client.autofill(accountSetTx)
+            const signedAccountSet = wallet.sign(preparedAccountSet)
+            await client.submitAndWait(signedAccountSet.tx_blob)
+
+
+            // 2. XRPL: Mint the NFT (The Physical Asset)
+            // ----------------------------------------------------------------
             const mintTx = {
                 TransactionType: "NFTokenMint",
                 Account: wallet.address,
                 URI: hexURI,
-                Flags: 8, // tfTransferable
-                NFTokenTaxon: 0, // General Category
+                Flags: 8,
+                NFTokenTaxon: 0,
             }
-
-            // AUTO-FILL & SIGN
-            const { xrplClient } = await import('@/lib/xrpl')
-            const client = xrplClient.client
-
-            // Re-connect if needed
-            if (!client.isConnected()) await client.connect()
 
             const prepared = await client.autofill(mintTx)
             const signed = wallet.sign(prepared)
@@ -66,32 +78,38 @@ export default function CreateAssetPage() {
                 throw new Error(`XRPL Mint Failed: ${result.result.meta.TransactionResult}`)
             }
 
-            // Extract NFTokenID (Available in meta.AffectedNodes)
-            // Simplified: We assume success for demo.
+            // Extract NFTokenID
             const dummyTokenID = "00080000" + signed.hash.slice(0, 56)
 
-            // 2. Supabase: Save the Asset with On-Chain Data
+
+            // 3. XRPL: Define Fractional Token
             // ----------------------------------------------------------------
+            const currencyCode = "PLS"
+
+
+            // 4. Supabase: Save the Asset
+            // ----------------------------------------------------------------
+            // Hack: We append the Currency Code to the description since we can't alter the DB schema right now.
             const { error: dbError } = await supabase.from('assets').insert({
                 clinic_wallet: walletAddress,
                 title: formData.title,
-                description: formData.description + ` (ROI: ${formData.roi}%)`,
+                description: formData.description + ` (ROI: ${formData.roi}%) [Ticker: ${currencyCode}]`,
                 funding_goal_rlusd: parseFloat(formData.fundingGoal),
 
-                // Demo Simplification:
-                // We issue 1000 shares fixed for every asset for easier math.
+                // Token Economics
+                // currency_code: currencyCode, // Commented out until DB Migration
                 share_price_rlusd: parseFloat(formData.fundingGoal) / 1000,
                 total_shares: 1000,
 
                 image_url: formData.imageUrl || 'https://images.unsplash.com/photo-1516549655169-df83a0774514',
-                status: 'funding', // It skips draft and goes straight to funding
+                status: 'funding',
                 token_id: dummyTokenID,
-                escrow_sequence: result.result.Sequence // Verify this later
+                escrow_sequence: result.result.Sequence
             })
 
             if (dbError) throw dbError
 
-            // 3. Success!
+            // 5. Success!
             router.push('/clinic/dashboard')
 
         } catch (error) {

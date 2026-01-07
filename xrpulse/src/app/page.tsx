@@ -23,7 +23,7 @@ export default function Home() {
         .from('profiles')
         .select('*')
         .eq('wallet_address', walletAddress)
-        .single()
+        .maybeSingle()
 
       setDbProfile(data)
 

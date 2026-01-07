@@ -63,6 +63,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             })
 
             try {
+                // Ensure we are connected before asking faucet
+                await xrplClient.connect()
+
                 // We use the client to fund. Note: This might take a few seconds.
                 console.log("Requesting funding from XRPL Faucet...")
                 const fundResult = await xrplClient.client.fundWallet(newWallet)
