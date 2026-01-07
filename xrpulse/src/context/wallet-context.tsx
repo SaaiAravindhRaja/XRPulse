@@ -49,9 +49,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
                         walletAddress: savedWallet.address,
                         role: (localStorage.getItem('xrpulse_role') as UserProfile['role']) || null
                     })
-                    // Fetch balance
-                    const balance = await xrplClient.client.getXrpBalance(savedWallet.address)
-                    setBalance(balance.toString())
+                    // Fetch balance with error handling
+                    try {
+                        const balance = await xrplClient.client.getXrpBalance(savedWallet.address)
+                        setBalance(balance.toString())
+                    } catch (err: any) {
+                        console.warn("Could not fetch balance for saved wallet (might be unfunded):", err.message)
+                        if (err.message && err.message.includes("Account not found")) {
+                            setBalance('0')
+                        }
+                    }
                 }
             } catch (e) {
                 console.error("Failed to connect to XRPL on init", e)
