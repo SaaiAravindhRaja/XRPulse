@@ -26,30 +26,32 @@ export default function ClinicDashboard() {
                 return
             }
 
-            // Fetch assets with their investments
-            const { data, error } = await supabase
+            // 1. Fetch assets
+            const { data: assetsData, error: assetsError } = await supabase
                 .from('assets')
-                .select(`
-                    *,
-                    investments (
-                        amount_invested
-                    )
-                `)
+                .select('*')
                 .eq('clinic_wallet', walletAddress)
                 .order('created_at', { ascending: false })
 
-            if (error) {
-                console.error("Error fetching assets:", error)
-            } else {
-                // Calculate total funding for each asset
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const enrichedData = data?.map((asset: any) => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const totalFunding = asset.investments?.reduce((sum: number, inv: any) => sum + inv.amount_invested, 0) || 0
-                    return { ...asset, calculated_funding: totalFunding }
-                })
-                setAssets(enrichedData || [])
+            if (assetsError) {
+                console.error("Error fetching assets:", assetsError)
+                setIsLoading(false)
+                return
             }
+
+            // 2. Fetch investments for these assets (Manually to avoid FK dependence)
+            const enrichedData = await Promise.all((assetsData || []).map(async (asset) => {
+                const { data: investments } = await supabase
+                    .from('investments')
+                    .select('amount_invested')
+                    .eq('asset_id', asset.id)
+
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const totalFunding = investments?.reduce((sum, inv: any) => sum + inv.amount_invested, 0) || 0
+                return { ...asset, calculated_funding: totalFunding }
+            }))
+
+            setAssets(enrichedData)
             setIsLoading(false)
         }
 
