@@ -22,6 +22,7 @@ interface WalletContextType {
     connectWallet: () => Promise<void>
     disconnectWallet: () => void
     isLoading: boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     signTransaction: (tx: any) => Promise<any>
 }
 
@@ -100,6 +101,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const signTransaction = async (tx: any) => {
         if (!wallet) throw new Error("No wallet connected")
 

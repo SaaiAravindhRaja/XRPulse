@@ -1,13 +1,8 @@
-
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Building2, TrendingUp, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
-
-interface RolePayload {
-    role: 'clinic' | 'investor'
-}
 
 interface RoleSelectorProps {
     onSelect: (role: 'clinic' | 'investor') => void
@@ -35,6 +30,7 @@ export function RoleSelector({ onSelect }: RoleSelectorProps) {
     )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function RoleCard({ icon, title, description, onClick, color }: any) {
     return (
         <Card

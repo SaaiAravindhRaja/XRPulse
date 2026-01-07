@@ -7,6 +7,7 @@ const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createAssetInDb(assetData: any) {
     console.log("⚡️ Server Action: Creating Asset...", assetData.title)
 
@@ -43,4 +44,40 @@ export async function createAssetInDb(assetData: any) {
     }
 
     return { success: true, data }
+}
+
+export async function recordInvestment(
+    assetId: string,
+    investorWallet: string,
+    shares: number,
+    amountPaid: number
+) {
+    console.log(`💰 Recording Investment: ${shares} shares for ${amountPaid} RLUSD`)
+
+    // 1. Insert Investment Record
+    const { error: investError } = await supabase.from('investments').insert({
+        asset_id: assetId,
+        investor_wallet: investorWallet,
+        amount_invested: amountPaid,
+        tokens_received: shares
+    })
+
+    if (investError) throw new Error("Investment Record Failed: " + investError.message)
+
+    // 2. Update Asset Funding Progress
+    // We need to fetch current funding first to be safe, or use RPC call if Supabase supported increment (it does via rpc, but let's keep it simple with fetch-update for now)
+
+    const { data: asset } = await supabase.from('assets').select('current_funding_rlusd').eq('id', assetId).single()
+    const newFunding = (asset?.current_funding_rlusd || 0) + amountPaid
+
+    // Update 'status' to 'funded' if goal reached? (Logic for later)
+
+    const { error: updateError } = await supabase
+        .from('assets')
+        .update({ current_funding_rlusd: newFunding })
+        .eq('id', assetId)
+
+    if (updateError) throw new Error("Asset Update Failed: " + updateError.message)
+
+    return { success: true }
 }

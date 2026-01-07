@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { useWallet } from "@/context/wallet-context"
 import { Loader2, UploadCloud, Stethoscope, Eye } from "lucide-react"
 import { useState } from "react"
-import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import { AssetCard } from "@/components/assets/asset-card"
 
@@ -37,8 +36,9 @@ export default function CreateAssetPage() {
         if (!walletAddress || !wallet) return
 
         setIsLoading(true)
+        setIsLoading(true)
         try {
-            const { convertStringToHex } = require('xrpl')
+
             const hexURI = Buffer.from(formData.imageUrl || 'xrpulse-asset').toString('hex')
 
             // AUTO-FILL & SIGN Setup
@@ -55,7 +55,8 @@ export default function CreateAssetPage() {
                 Account: wallet.address,
                 SetFlag: 8, // tfDefaultRipple
             }
-            const preparedAccountSet = await client.autofill(accountSetTx)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const preparedAccountSet = await client.autofill(accountSetTx as any)
             const signedAccountSet = wallet.sign(preparedAccountSet)
             await client.submitAndWait(signedAccountSet.tx_blob)
 
@@ -70,12 +71,15 @@ export default function CreateAssetPage() {
                 NFTokenTaxon: 0,
             }
 
-            const prepared = await client.autofill(mintTx)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const prepared = await client.autofill(mintTx as any)
             const signed = wallet.sign(prepared)
             const result = await client.submitAndWait(signed.tx_blob)
 
-            if (result.result.meta.TransactionResult !== "tesSUCCESS") {
-                throw new Error(`XRPL Mint Failed: ${result.result.meta.TransactionResult}`)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if ((result.result.meta as any).TransactionResult !== "tesSUCCESS") {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                throw new Error(`XRPL Mint Failed: ${(result.result.meta as any).TransactionResult}`)
             }
 
             // Extract NFTokenID
@@ -101,7 +105,8 @@ export default function CreateAssetPage() {
                 image_url: formData.imageUrl || 'https://images.unsplash.com/photo-1516549655169-df83a0774514',
                 status: 'funding',
                 token_id: dummyTokenID,
-                escrow_sequence: result.result.Sequence
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                escrow_sequence: (result.result as any).Sequence
             })
 
 

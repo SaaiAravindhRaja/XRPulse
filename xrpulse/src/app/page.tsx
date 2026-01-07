@@ -5,13 +5,12 @@ import { ConnectWalletButton } from "@/components/auth/connect-wallet-button"
 import { RoleSelector } from "@/components/auth/role-selector"
 import { useWallet } from "@/context/wallet-context"
 import { Activity } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 
 export default function Home() {
-  const { isConnected, walletAddress, profile } = useWallet()
-  const [dbProfile, setDbProfile] = useState<any>(null)
+  const { isConnected, walletAddress } = useWallet()
   const router = useRouter()
 
   useEffect(() => {
@@ -25,7 +24,7 @@ export default function Home() {
         .eq('wallet_address', walletAddress)
         .maybeSingle()
 
-      setDbProfile(data)
+
 
       if (data?.role === 'clinic') {
         router.push('/clinic/dashboard')

@@ -1,11 +1,11 @@
 
 "use client"
 
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
-import { HeartPulse, TrendingUp, Users } from "lucide-react"
+import { HeartPulse, TrendingUp } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface AssetCardProps {
@@ -15,6 +15,7 @@ interface AssetCardProps {
     fundingGoal: number
     currentFunding?: number
     roi: number
+    sharePrice?: number
     status?: 'draft' | 'funding' | 'funded' | 'active'
     onAction?: () => void
     actionLabel?: string
@@ -28,6 +29,7 @@ export function AssetCard({
     fundingGoal,
     currentFunding = 0,
     roi,
+    sharePrice = 100,
     status = 'draft',
     onAction,
     actionLabel = "View Details",
@@ -81,7 +83,7 @@ export function AssetCard({
                 <div className="grid grid-cols-2 gap-2 pt-2">
                     <div className="bg-slate-50 p-2 rounded-lg text-center">
                         <div className="text-xs text-slate-500 mb-0.5">Share Price</div>
-                        <div className="font-mono font-bold text-slate-700">100 RLUSD</div>
+                        <div className="font-mono font-bold text-slate-700">{sharePrice} RLUSD</div>
                     </div>
                     <div className="bg-slate-50 p-2 rounded-lg text-center">
                         <div className="text-xs text-slate-500 mb-0.5">Impact</div>
