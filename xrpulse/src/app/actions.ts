@@ -65,19 +65,8 @@ export async function recordInvestment(
     if (investError) throw new Error("Investment Record Failed: " + investError.message)
 
     // 2. Update Asset Funding Progress
-    // We need to fetch current funding first to be safe, or use RPC call if Supabase supported increment (it does via rpc, but let's keep it simple with fetch-update for now)
-
-    const { data: asset } = await supabase.from('assets').select('current_funding_rlusd').eq('id', assetId).single()
-    const newFunding = (asset?.current_funding_rlusd || 0) + amountPaid
-
-    // Update 'status' to 'funded' if goal reached? (Logic for later)
-
-    const { error: updateError } = await supabase
-        .from('assets')
-        .update({ current_funding_rlusd: newFunding })
-        .eq('id', assetId)
-
-    if (updateError) throw new Error("Asset Update Failed: " + updateError.message)
+    // Note: We calculate funding dynamically via SQL joins or separate fetch in the UI.
+    // The 'current_funding_rlusd' column was removed to simplify the schema source-of-truth.
 
     return { success: true }
 }
