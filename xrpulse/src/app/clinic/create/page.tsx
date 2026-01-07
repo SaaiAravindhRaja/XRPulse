@@ -87,27 +87,24 @@ export default function CreateAssetPage() {
             const currencyCode = "PLS"
 
 
-            // 4. Supabase: Save the Asset
+            // 4. Supabase: Save the Asset (via Server Action)
             // ----------------------------------------------------------------
-            // Hack: We append the Currency Code to the description since we can't alter the DB schema right now.
-            const { error: dbError } = await supabase.from('assets').insert({
+            const { createAssetInDb } = await import('@/app/actions')
+
+            await createAssetInDb({
                 clinic_wallet: walletAddress,
                 title: formData.title,
                 description: formData.description + ` (ROI: ${formData.roi}%) [Ticker: ${currencyCode}]`,
                 funding_goal_rlusd: parseFloat(formData.fundingGoal),
-
-                // Token Economics
-                // currency_code: currencyCode, // Commented out until DB Migration
                 share_price_rlusd: parseFloat(formData.fundingGoal) / 1000,
                 total_shares: 1000,
-
                 image_url: formData.imageUrl || 'https://images.unsplash.com/photo-1516549655169-df83a0774514',
                 status: 'funding',
                 token_id: dummyTokenID,
                 escrow_sequence: result.result.Sequence
             })
 
-            if (dbError) throw dbError
+
 
             // 5. Success!
             router.push('/clinic/dashboard')
