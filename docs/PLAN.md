@@ -22,33 +22,34 @@
 
 ---
 
-## Phase 3: Clinic - The Asset Studio (UI)
-**Goal:** Create a beautiful, form-based interface for Clinics to list equipment.
-- [ ] **Upload Form:** Form for Title, Description, Cost, ROI, Image URL.
-- [ ] **Design:** Shadcn Cards, Input fields with "Medical" styling (clean, sterile, precise).
+## Phase 3: Clinic - The Asset Studio (Completed)
+- [x] **Upload Form:** Form for Title, Description, Cost, ROI, Image URL.
+- [x] **Design:** Shadcn Cards, clean medical styling.
 
-## Phase 4: Clinic - The Tokenization Engine (XRPL)
-**Goal:** Connect the form to the XRP Ledger.
-- [ ] **Mint Logic (`lib/actions/mint.ts`):** 
-    - `NFTokenMint` (The Machine).
-    - `AccountSet` (Configure Issuer).
-    - `Payment` (Issue fractional `PULSE` tokens to self).
-- [ ] **Saving:** Store the `TokenID` and `CurrencyCode` in Supabase.
+## Phase 4: Clinic - The Tokenization Engine (Completed)
+- [x] **Mint Logic:** `NFTokenMint` + `AccountSet` (DefaultRipple).
+- [x] **Saving:** Asset data stored in Supabase with `token_id`.
 
-## Phase 5: Investor - The Marketplace (UI)
-**Goal:** A high-trust browsing experience for Investors.
-- [ ] **Asset Grid:** Cards showing "Funding Progress", "APY", and "Impact".
-- [ ] **Details View:** A deep dive modal showing the machine's specs and financial breakdown.
+## Phase 5: Investor - The Marketplace (Completed)
+- [x] **Asset Grid:** Cards displaying "Funding Progress" & "Share Price".
+- [x] **Portfolio Tab:** View for investors to see their holdings.
 
-## Phase 6: Investor - Check Writing (XRPL)
-**Goal:** The moment of funding.
-- [ ] **Trustline Button:** "Enable Trading for PULSE-XRAY".
-- [ ] **Invest Action:** 
-    - Sending `RLUSD` to the Clinic.
-    - Clinic sends `PULSE` tokens back (Simplified Swap).
-    - *Note:* We will use direct payments for the MVP speed.
+## Phase 6: Investor - Check Writing (Completed)
+- [x] **Trustlines:** `TrustSet` transaction specific to asset.
+- [x] **Invest Action:** `Payment` transaction (XRP proxy for RLUSD).
+- [x] **DB Update:** Server Action to record investment.
 
-## Phase 7: The Pulse (Yield & Viz)
-**Goal:** Visualize the impact.
-- [ ] **Yield Script:** One-click button to distribute RLUSD dividends to all holders.
-- [ ] **Heartbeat Visualizer:** A component that beats with every ledger close.
+## Phase 7: The Pulse (Yield & Viz) (Completed)
+- [x] **Yield Script:** `scripts/distribute-yield.ts` automates dividends.
+- [x] **Heartbeat Visualizer:** `/pulse` dashboard with real-time charts.
+
+## Phase 8: Polish & Iterate (Coming Up)
+**Goal:** Refine the experience and code quality.
+- [ ] **Code Cleanup:** Remove unused variables (already verified in build).
+- [ ] **UI Polish:** 
+    - [ ] Improve "Connect Wallet" state persistence.
+    - [ ] Add "Success Confetti" on investment.
+    - [ ] Make the "Pulse" chart more realistic (connect to real block time?).
+- [ ] **Features:**
+    - [ ] "My Listings" for Clinics (to see what they minted).
+    - [ ] "Withdraw" for Clinics (to access the funds).
