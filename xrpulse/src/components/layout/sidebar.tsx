@@ -25,10 +25,10 @@ export function Sidebar({ role }: SidebarProps) {
     return (
         <div className="w-64 border-r border-slate-800 bg-slate-950/50 flex flex-col h-screen sticky top-0">
             {/* Brand */}
-            <div className="p-6 border-b border-slate-800 flex items-center gap-2">
+            <Link href="/" className="p-6 border-b border-slate-800 flex items-center gap-2 hover:bg-slate-900/50 transition-colors">
                 <Activity className="w-6 h-6 text-emerald-500" />
                 <span className="font-bold text-lg tracking-tight text-white">XRPulse</span>
-            </div>
+            </Link>
 
             {/* Nav */}
             <nav className="flex-1 p-4 space-y-1">

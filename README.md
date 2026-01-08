@@ -1,5 +1,7 @@
 # XRPulse
 
+<img src="./XRPulse.png" width="100%" alt="XRPulse Banner" />
+
 ### The Heartbeat of Medical Finance 🏥⚡️
 
 **XRPulse** is a decentralized marketplace for fractionalizing high-value medical infrastructure on the **XRPL (XRP Ledger)**. It mimics the tokenization of Real-World Assets (RWAs), allowing clinics to raise capital for expensive equipment (like MRI scanners) and investors to earn fractional yields.

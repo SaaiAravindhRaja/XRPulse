@@ -234,10 +234,21 @@ export default function CreateAssetPage() {
                                 <p className="text-xs text-slate-500">Based on projected lease payments from the clinic.</p>
                             </div>
 
-                            <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 border border-emerald-500/50 h-12 text-base font-medium" disabled={isLoading}>
-                                {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-                                Create & Mint Asset
-                            </Button>
+                            <div className="flex gap-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="w-1/3 border-slate-700 text-slate-300 hover:bg-slate-900 hover:text-white h-12 text-base font-medium"
+                                    onClick={() => router.push('/clinic/dashboard')}
+                                    disabled={isLoading}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 border border-emerald-500/50 h-12 text-base font-medium" disabled={isLoading}>
+                                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
+                                    Create & Mint Asset
+                                </Button>
+                            </div>
 
                         </form>
                     </CardContent>

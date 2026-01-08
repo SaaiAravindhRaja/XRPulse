@@ -110,10 +110,18 @@ export default function ClinicDashboard() {
                         <ConnectWalletButton />
                     </div>
                 ) : assets.length === 0 ? (
-                    <div className="text-center py-24 glass-panel rounded-3xl border-dashed border-slate-700">
-                        <p className="text-slate-400 mb-6 text-lg">No assets found for this wallet.</p>
+                    <div className="text-center py-24 glass-panel rounded-3xl border border-dashed border-slate-700 bg-slate-900/30">
+                        <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <PlusCircle className="w-8 h-8 text-slate-400" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-white mb-2">No Assets Listed</h3>
+                        <p className="text-slate-400 mb-8 max-w-md mx-auto">
+                            You haven't tokenized any medical equipment yet. Create your first digital twin to start raising capital.
+                        </p>
                         <Link href="/clinic/create">
-                            <Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">Create your first Asset</Button>
+                            <Button className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 px-8 h-11">
+                                Create your first Asset
+                            </Button>
                         </Link>
                     </div>
                 ) : (
