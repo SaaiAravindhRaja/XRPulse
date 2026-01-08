@@ -78,13 +78,10 @@ export default function ClinicDashboard() {
 
     return (
         <div className="min-h-screen bg-transparent text-slate-100">
-            <header className="px-8 py-6 flex justify-between items-center border-b border-slate-800/50 sticky top-0 z-10 w-full backdrop-blur-md bg-slate-950/80 shadow-sm">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-emerald-500/20">C</div>
-                    <h1 className="text-xl font-bold tracking-tight text-white">Clinic<span className="text-slate-500 font-normal">Console</span></h1>
-                </div>
+            {/* Header Removed (Handled by Sidebar) */}
+            <div className="flex justify-end p-8 pb-0">
                 <ConnectWalletButton />
-            </header>
+            </div>
 
             <main className="p-8 max-w-7xl mx-auto space-y-10">
                 {/* Header Action */}

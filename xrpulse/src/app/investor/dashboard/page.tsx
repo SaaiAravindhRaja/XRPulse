@@ -109,14 +109,9 @@ export default function InvestorDashboard() {
 
     return (
         <div className="min-h-screen bg-transparent text-slate-100">
-            <header className="px-8 py-6 flex justify-between items-center border-b border-slate-800/50 sticky top-0 z-10 w-full backdrop-blur-md bg-slate-950/80">
-                <div className="flex items-center gap-4">
-                    <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">
-                        XRPulse Marketplace
-                    </h1>
-                </div>
+            <div className="flex justify-end p-8 pb-0">
                 <ConnectWalletButton />
-            </header>
+            </div>
 
             <main className="p-8 max-w-7xl mx-auto">
                 <div className="mb-10 text-center md:text-left">

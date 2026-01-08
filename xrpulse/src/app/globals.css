@@ -19,8 +19,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
+    /* Medical Green (Emerald 500) */
     --primary: 160 84% 39%;
-    /* Emerald */
     --primary-foreground: 144.9 80.4% 10%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -72,26 +72,34 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    /* Add a subtle gradient background */
+    @apply bg-slate-950 text-slate-50 antialiased;
+    
+    /* Technical Grid Background */
+    background-size: 50px 50px;
     background-image:
-      radial-gradient(at 0% 0%, hsla(222, 47%, 11%, 1) 0, transparent 50%),
-      radial-gradient(at 50% 0%, hsla(210, 24%, 12%, 1) 0, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(160, 30%, 15%, 1) 0, transparent 50%);
+      linear-gradient(to right, rgba(51, 65, 85, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(51, 65, 85, 0.05) 1px, transparent 1px);
     background-attachment: fixed;
   }
 }
 
 @layer utilities {
+  /* Remove excessive blur, add crisp borders */
   .glass-panel {
-    @apply bg-slate-900/40 backdrop-blur-md border border-slate-800/50 shadow-xl;
+    @apply bg-slate-900/80 border border-slate-800 shadow-xl backdrop-blur-sm;
   }
 
   .glass-card {
-    @apply bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 hover:border-emerald-500/30 transition-all duration-300;
+    @apply bg-slate-900 border border-slate-800 hover:border-emerald-500/50 transition-colors duration-200;
   }
 
   .text-gradient-medical {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400;
+    @apply text-white; /* Simplified for professional look, or keep subtle */
+    /* @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-200; */
+  }
+
+  /* New Utility for "Technical" look */
+  .tech-border {
+    @apply border border-slate-800;
   }
 }

@@ -4,47 +4,38 @@
 import { ConnectWalletButton } from "@/components/auth/connect-wallet-button"
 import { RoleSelector } from "@/components/auth/role-selector"
 import { useWallet } from "@/context/wallet-context"
-import { Activity, Globe2, PieChart } from "lucide-react"
+import { Activity, ArrowRight, ShieldCheck, Zap } from "lucide-react"
 import { useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
+import { MarketTicker } from "@/components/home/market-ticker"
+import { Button } from "@/components/ui/button"
 
 export default function Home() {
   const { isConnected, walletAddress } = useWallet()
   const router = useRouter()
 
   useEffect(() => {
-    // If connected, check if profile exists in DB
     const checkProfile = async () => {
       if (!walletAddress) return
-
       const { data } = await supabase
         .from('profiles')
         .select('*')
         .eq('wallet_address', walletAddress)
         .maybeSingle()
 
-
-
       if (data?.role) {
         localStorage.setItem('xrpulse_role', data.role)
-        if (data.role === 'clinic') {
-          router.push('/clinic/dashboard')
-        } else if (data.role === 'investor') {
-          router.push('/investor/dashboard')
-        }
+        if (data.role === 'clinic') router.push('/clinic/dashboard')
+        else if (data.role === 'investor') router.push('/investor/dashboard')
       }
     }
 
-    if (isConnected) {
-      checkProfile()
-    }
+    if (isConnected) checkProfile()
   }, [isConnected, walletAddress, router])
 
   const handleRoleSelect = async (role: 'clinic' | 'investor') => {
     if (!walletAddress) return
-
-    // Create Profile in Supabase
     const { error } = await supabase.from('profiles').upsert({
       wallet_address: walletAddress,
       role: role,
@@ -58,97 +49,94 @@ export default function Home() {
     }
 
     localStorage.setItem('xrpulse_role', role)
-
-    // Redirect
     if (role === 'clinic') router.push('/clinic/dashboard')
     else router.push('/investor/dashboard')
   }
 
   return (
-    <main className="min-h-screen bg-transparent flex flex-col relative overflow-hidden">
-      {/* Background Gradients */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[100px]" />
-      </div>
+    <main className="min-h-screen flex flex-col relative bg-slate-950 text-slate-50">
+
+      {/* Ticker */}
+      <MarketTicker />
 
       {/* Header */}
-      <header className="px-8 py-6 flex justify-between items-center border-b border-white/5 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          <div className="bg-slate-800/50 p-2 rounded-lg border border-slate-700">
-            <Activity className="text-emerald-400 w-6 h-6" />
-          </div>
-          <span className="text-xl font-bold text-white tracking-tight">XRPulse</span>
+      <header className="px-8 py-4 flex justify-between items-center border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <Activity className="text-emerald-500 w-6 h-6" />
+          <span className="text-lg font-bold tracking-tight text-white">XRPulse</span>
         </div>
         <ConnectWalletButton />
       </header>
 
-      {/* Hero Content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-1000 slide-in-from-bottom-5">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 text-center animate-in fade-in duration-700">
 
         {!isConnected ? (
-          <div className="max-w-3xl space-y-8">
-            <div className="space-y-4">
-              <div className="inline-block px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 text-sm font-medium mb-4">
-                The Future of Medical Financing
+          <div className="max-w-4xl w-full space-y-12">
+
+            {/* Hero Text */}
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 text-xs font-mono uppercase tracking-wider">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                Live on XRPL Testnet
               </div>
-              <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-tight">
-                The Heartbeat of <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Medical Finance</span>.
+
+              <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight text-balance">
+                Tokenized Medical Infrastructure.
               </h1>
+
               <p className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                A decentralized marketplace for fractionalizing high-value medical infrastructure on the XRPL. Invest in real-world assets with real-world impact.
+                The first decentralized marketplace for fractional ownership of high-value healthcare assets.
+                <span className="text-slate-300 font-medium"> Instant settlement. Auditable ROI.</span>
               </p>
             </div>
-            <div className="pt-8 flex justify-center gap-4">
+
+            {/* CTA */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <ConnectWalletButton />
+              <Button variant="outline" className="border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 h-11 px-8">
+                View Documentation
+              </Button>
             </div>
 
-            {/* Feature Highlights */}
-            <div className="grid md:grid-cols-3 gap-6 mt-16 text-left">
-              <div className="glass-panel p-6 rounded-2xl border-slate-800/50 hover:border-emerald-500/30 transition-colors group">
-                <div className="p-3 bg-emerald-500/10 w-fit rounded-lg mb-4 group-hover:bg-emerald-500/20 transition-colors">
-                  <Activity className="w-6 h-6 text-emerald-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">Transparency</h3>
-                <p className="text-slate-400 text-sm">
-                  Real-time tracking of funds and asset performance on the XRPL ledger.
-                </p>
+            {/* Trust Badges */}
+            <div className="grid md:grid-cols-3 gap-8 pt-12 border-t border-slate-800/50 mt-12">
+              <div className="flex flex-col items-center gap-2">
+                <ShieldCheck className="w-8 h-8 text-slate-600" />
+                <h3 className="font-bold text-slate-300">Audited Security</h3>
+                <p className="text-sm text-slate-500">Assets verified on-chain via XRPL URITokens.</p>
               </div>
-
-              <div className="glass-panel p-6 rounded-2xl border-slate-800/50 hover:border-blue-500/30 transition-colors group">
-                <div className="p-3 bg-blue-500/10 w-fit rounded-lg mb-4 group-hover:bg-blue-500/20 transition-colors">
-                  <Globe2 className="w-6 h-6 text-blue-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">Global Access</h3>
-                <p className="text-slate-400 text-sm">
-                  Seamless cross-border investment opportunities without traditional barriers.
-                </p>
+              <div className="flex flex-col items-center gap-2">
+                <Zap className="w-8 h-8 text-slate-600" />
+                <h3 className="font-bold text-slate-300">Instant Liquidity</h3>
+                <p className="text-sm text-slate-500">Trade fractional shares 24/7 with RLUSD.</p>
               </div>
-
-              <div className="glass-panel p-6 rounded-2xl border-slate-800/50 hover:border-purple-500/30 transition-colors group">
-                <div className="p-3 bg-purple-500/10 w-fit rounded-lg mb-4 group-hover:bg-purple-500/20 transition-colors">
-                  <PieChart className="w-6 h-6 text-purple-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">Fractional Investing</h3>
-                <p className="text-slate-400 text-sm">
-                  Invest in high-value medical equipment with accessible entry points.
-                </p>
+              <div className="flex flex-col items-center gap-2">
+                <Activity className="w-8 h-8 text-slate-600" />
+                <h3 className="font-bold text-slate-300">Real Yield</h3>
+                <p className="text-sm text-slate-500">Earn from actual medical equipment usage.</p>
               </div>
             </div>
+
           </div>
         ) : (
-          <div className="w-full max-w-4xl space-y-12">
-            <div className="space-y-4">
-              <h2 className="text-4xl font-bold text-white tracking-tight">Welcome to XRPulse</h2>
-              <p className="text-slate-400 text-lg">Select your role to continue onboarding into the ecosystem.</p>
+          <div className="w-full max-w-3xl space-y-8 glass-panel p-10 rounded-2xl border-slate-800">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold text-white tracking-tight">Identity Verified</h2>
+              <p className="text-slate-400">Select your ecosystem role.</p>
             </div>
-
             <RoleSelector onSelect={handleRoleSelect} />
           </div>
         )}
-
       </div>
+
+      {/* Disclaimer */}
+      <footer className="py-6 text-center text-xs text-slate-600 border-t border-slate-900">
+        © 2026 XRPulse Decentralized Protocol. Built for NUS FinTech Summit.
+      </footer>
     </main>
   );
 }
