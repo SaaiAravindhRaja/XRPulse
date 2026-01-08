@@ -1,6 +1,8 @@
 # XRPulse
 
-<img src="./XRPulse.png" width="100%" alt="XRPulse Banner" />
+<div align="center">
+  <img src="./XRPulse.png" width="40%" alt="XRPulse Banner" />
+</div>
 
 ### The Heartbeat of Medical Finance 🏥⚡️
 

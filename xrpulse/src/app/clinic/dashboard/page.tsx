@@ -116,7 +116,7 @@ export default function ClinicDashboard() {
                         </div>
                         <h3 className="text-2xl font-bold text-white mb-2">No Assets Listed</h3>
                         <p className="text-slate-400 mb-8 max-w-md mx-auto">
-                            You haven't tokenized any medical equipment yet. Create your first digital twin to start raising capital.
+                            You haven&apos;t tokenized any medical equipment yet. Create your first digital twin to start raising capital.
                         </p>
                         <Link href="/clinic/create">
                             <Button className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 px-8 h-11">
