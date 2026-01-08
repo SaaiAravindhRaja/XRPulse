@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { HeartPulse, TrendingUp } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 interface AssetCardProps {
     title: string
@@ -39,11 +40,13 @@ export function AssetCard({
 
     return (
         <Card className={cn("glass-card overflow-hidden group border-slate-800", className)}>
-            <div className="relative h-48 w-full overflow-hidden">
+            <div className="relative h-48 w-full overflow-hidden bg-slate-900">
                 {/* Image */}
-                <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                    style={{ backgroundImage: `url(${imageUrl || 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80'})` }}
+                <Image
+                    src={imageUrl || 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80'}
+                    alt={title}
+                    fill
+                    className="object-contain transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent" />
 
