@@ -4,7 +4,7 @@
 import { ConnectWalletButton } from "@/components/auth/connect-wallet-button"
 import { RoleSelector } from "@/components/auth/role-selector"
 import { useWallet } from "@/context/wallet-context"
-import { Activity, ArrowRight, ShieldCheck, Zap } from "lucide-react"
+import { Activity, ShieldCheck, Zap } from "lucide-react"
 import { useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
