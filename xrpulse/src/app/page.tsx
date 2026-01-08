@@ -103,7 +103,7 @@ export default function Home() {
                 className="border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 h-11 px-8 gap-2"
                 asChild
               >
-                <Link href="https://github.com/SaaiAravindh/NUS-FinTech-Summit-2026" target="_blank" rel="noopener noreferrer">
+                <Link href="https://github.com/SaaiAravindhRaja/XRPulse" target="_blank" rel="noopener noreferrer">
                   <Github className="w-4 h-4" />
                   View GitHub
                 </Link>
