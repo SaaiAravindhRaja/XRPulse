@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# XRPulse
 
-## Getting Started
+### The Heartbeat of Medical Finance 🏥⚡️
 
-First, run the development server:
+**XRPulse** is a decentralized marketplace for fractionalizing high-value medical infrastructure on the **XRPL (XRP Ledger)**. It mimics the tokenization of Real-World Assets (RWAs), allowing clinics to raise capital for expensive equipment (like MRI scanners) and investors to earn fractional yields.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+![XRPulse App](./public/XRPulse.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Key Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Clinic Dashboard**: List physical assets (MRI, X-Rays) as digital twins (NFTs) on XRPL.
+- **Investor Marketplace**: Browse and fund medical equipment with instant settlements.
+- **Fractional Ownership**: (Simulation) Purchase shares of high-value assets using RLUSD stablecoin.
+- **Transparency**: All funding progress and asset metadata are secured on-chain.
+- **Glassmorphism UI**: High-end, futuristic aesthetic built with Tailwind CSS & Shadcn UI.
 
-## Learn More
+## 🛠 Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework**: Next.js 14 (App Router)
+- **Database**: Supabase (PostgreSQL + Realtime)
+- **Blockchain**: XRPL (xrpl.js) - Testnet
+- **Styling**: Tailwind CSS, Shadcn UI, Lucide Icons
+- **State**: React Context (Wallet), LocalStorage (Role persistence)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📦 Getting Started
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Prerequisites
+- Node.js 18+
+- Supabase Account
 
-## Deploy on Vercel
+### Installation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/SaaiAravindhRaja/XRPulse.git
+   cd XRPulse/xrpulse
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment**
+   Create a `.env.local` file in the root:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+   ```
+
+4. **Run the App**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) to view the app.
+
+## 🧪 Testing the Flow
+
+1. **Connect Wallet**: It will auto-generate a funded Testnet wallet for you.
+2. **Select Role**: Choose **Clinic** to list an asset.
+3. **List Asset**: Fill in the form. This mints a URIToken on XRPL.
+4. **Switch Role**: Disconnect, then connect again and choose **Investor**.
+5. **Invest**: Go to the Marketplace and fund the asset derived from the Clinic.
+
+## 📜 License
+
+MIT
