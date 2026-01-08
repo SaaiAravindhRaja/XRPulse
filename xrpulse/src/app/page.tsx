@@ -4,8 +4,8 @@
 import { ConnectWalletButton } from "@/components/auth/connect-wallet-button"
 import { RoleSelector } from "@/components/auth/role-selector"
 import { useWallet } from "@/context/wallet-context"
-import { Activity, ShieldCheck, Zap } from "lucide-react"
-import { useEffect } from "react"
+import { Activity, ShieldCheck, Zap, ArrowRight, LayoutDashboard } from "lucide-react"
+import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import { MarketTicker } from "@/components/home/market-ticker"
@@ -15,6 +15,7 @@ import Link from "next/link"
 export default function Home() {
   const { isConnected, walletAddress } = useWallet()
   const router = useRouter()
+  const [existingRole, setExistingRole] = useState<'clinic' | 'investor' | null>(null)
 
   useEffect(() => {
     const checkProfile = async () => {
@@ -27,13 +28,11 @@ export default function Home() {
 
       if (data?.role) {
         localStorage.setItem('xrpulse_role', data.role)
-        if (data.role === 'clinic') router.push('/clinic/dashboard')
-        else if (data.role === 'investor') router.push('/investor/dashboard')
+        setExistingRole(data.role)
       }
-    }
 
-    if (isConnected) checkProfile()
-  }, [isConnected, walletAddress, router])
+      if (isConnected) checkProfile()
+    }, [isConnected, walletAddress, router])
 
   const handleRoleSelect = async (role: 'clinic' | 'investor') => {
     if (!walletAddress) return
@@ -125,11 +124,39 @@ export default function Home() {
           </div>
         ) : (
           <div className="w-full max-w-3xl space-y-8 glass-panel p-10 rounded-2xl border-slate-800">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-white tracking-tight">Identity Verified</h2>
-              <p className="text-slate-400">Select your ecosystem role.</p>
-            </div>
-            <RoleSelector onSelect={handleRoleSelect} />
+            {existingRole ? (
+              <div className="text-center space-y-6 animate-in slide-in-from-bottom-4">
+                <div className="mx-auto w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                  <LayoutDashboard className="w-8 h-8 text-emerald-400" />
+                </div>
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-bold text-white">Welcome Back</h2>
+                  <p className="text-slate-400">
+                    You are signed in as a <span className="text-emerald-400 capitalize">{existingRole}</span>.
+                  </p>
+                </div>
+
+                <Button
+                  size="lg"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white gap-2"
+                  onClick={() => router.push(`/${existingRole}/dashboard`)}
+                >
+                  Go to Dashboard <ArrowRight className="w-4 h-4" />
+                </Button>
+
+                <p className="text-xs text-slate-500 pt-4">
+                  Want to switch roles? Disconnect your wallet first.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-bold text-white tracking-tight">Identity Verified</h2>
+                  <p className="text-slate-400">Select your ecosystem role.</p>
+                </div>
+                <RoleSelector onSelect={handleRoleSelect} />
+              </>
+            )}
           </div>
         )}
       </div>

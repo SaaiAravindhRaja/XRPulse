@@ -2,11 +2,9 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Database, PieChart, LogOut, Settings } from "lucide-react"
+import { Activity, LayoutDashboard, Database, PieChart, LogOut, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useWallet } from "@/context/wallet-context"
-import Image from "next/image"
-import logo from "@/app/XRPulse.png"
 
 interface SidebarProps {
     role: 'clinic' | 'investor'
@@ -27,8 +25,9 @@ export function Sidebar({ role }: SidebarProps) {
     return (
         <div className="w-64 border-r border-slate-800 bg-slate-950/50 flex flex-col h-screen sticky top-0">
             {/* Brand */}
-            <Link href="/" className="p-4 border-b border-slate-800 flex items-center gap-2 hover:bg-slate-900/50 transition-colors">
-                <Image src={logo} alt="XRPulse" width={140} height={40} className="object-contain" />
+            <Link href="/" className="p-6 border-b border-slate-800 flex items-center gap-2 hover:bg-slate-900/50 transition-colors">
+                <Activity className="w-6 h-6 text-emerald-500" />
+                <span className="font-bold text-lg tracking-tight text-white">XRPulse</span>
             </Link>
 
             {/* Nav */}
