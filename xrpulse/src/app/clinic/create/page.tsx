@@ -105,15 +105,14 @@ export default function CreateAssetPage() {
         e.preventDefault()
         if (!walletAddress || !wallet) return
 
-        if (!formData.imageUrl) {
-            toast({ title: "Image Required", description: "Please upload an image for the asset.", variant: "destructive" })
-            return
-        }
+        // Use default image if none provided
+        const defaultImage = 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80'
+        const finalImageUrl = formData.imageUrl || defaultImage
 
         setIsLoading(true)
         try {
 
-            const hexURI = Buffer.from(formData.imageUrl || 'xrpulse-asset').toString('hex')
+            const hexURI = Buffer.from(finalImageUrl || 'xrpulse-asset').toString('hex')
 
             // AUTO-FILL & SIGN Setup
             const { xrplClient } = await import('@/lib/xrpl')
@@ -176,7 +175,7 @@ export default function CreateAssetPage() {
                 funding_goal_rlusd: parseFloat(formData.fundingGoal),
                 share_price_rlusd: parseFloat(formData.fundingGoal) / 1000,
                 total_shares: 1000,
-                image_url: formData.imageUrl,
+                image_url: finalImageUrl,
                 status: 'funding',
                 token_id: dummyTokenID,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -236,7 +235,7 @@ export default function CreateAssetPage() {
 
                             {/* Image Upload Area */}
                             <div className="space-y-2">
-                                <Label className="text-slate-200">Equipment Image</Label>
+                                <Label className="text-slate-200">Equipment Image (Optional)</Label>
 
                                 {formData.imageUrl ? (
                                     <div className="relative w-full h-48 rounded-lg overflow-hidden border border-slate-700 group">
