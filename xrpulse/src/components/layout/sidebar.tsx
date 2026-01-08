@@ -19,7 +19,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/clinic/create', label: 'List Asset', icon: Database },
     ] : [
         { href: '/investor/dashboard', label: 'Marketplace', icon: LayoutDashboard },
-        { href: '/investor/portfolio', label: 'Portfolio', icon: PieChart }, // Assuming we split this later
+        { href: '/investor/dashboard', label: 'Portfolio', icon: PieChart }, // Both go to dashboard for now
     ]
 
     return (
