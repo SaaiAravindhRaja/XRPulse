@@ -4,8 +4,6 @@
 
 **XRPulse** is a decentralized marketplace for fractionalizing high-value medical infrastructure on the **XRPL (XRP Ledger)**. It mimics the tokenization of Real-World Assets (RWAs), allowing clinics to raise capital for expensive equipment (like MRI scanners) and investors to earn fractional yields.
 
-![XRPulse App](./public/XRPulse.png)
-
 ---
 
 ## 🚀 Key Features
@@ -63,7 +61,3 @@
 3. **List Asset**: Fill in the form. This mints a URIToken on XRPL.
 4. **Switch Role**: Disconnect, then connect again and choose **Investor**.
 5. **Invest**: Go to the Marketplace and fund the asset derived from the Clinic.
-
-## 📜 License
-
-MIT
