@@ -30,9 +30,10 @@ export default function Home() {
         localStorage.setItem('xrpulse_role', data.role)
         setExistingRole(data.role)
       }
+    }
 
-      if (isConnected) checkProfile()
-    }, [isConnected, walletAddress, router])
+    if (isConnected) checkProfile()
+  }, [isConnected, walletAddress, router])
 
   const handleRoleSelect = async (role: 'clinic' | 'investor') => {
     if (!walletAddress) return
