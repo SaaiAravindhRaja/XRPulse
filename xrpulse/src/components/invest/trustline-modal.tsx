@@ -24,9 +24,10 @@ interface TrustLineModalProps {
     asset: Asset | null
     open: boolean
     onOpenChange: (open: boolean) => void
+    onSuccess?: () => void
 }
 
-export function TrustLineModal({ asset, open, onOpenChange }: TrustLineModalProps) {
+export function TrustLineModal({ asset, open, onOpenChange, onSuccess }: TrustLineModalProps) {
     const { wallet, walletAddress, isConnected } = useWallet()
     const [shares, setShares] = useState(10)
     const [isLoading, setIsLoading] = useState(false)
@@ -105,8 +106,11 @@ export function TrustLineModal({ asset, open, onOpenChange }: TrustLineModalProp
             setTimeout(() => {
                 onOpenChange(false)
                 setIsSuccess(false)
-                // Trigger refresh if possible?
-                window.location.reload() // Brute force refresh for demo
+                if (onSuccess) {
+                    onSuccess()
+                } else {
+                    window.location.reload() // Fallback
+                }
             }, 2000)
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -124,14 +124,14 @@ export default function CreateAssetPage() {
 
     if (!isConnected) {
         return (
-            <div className="min-h-screen bg-slate-50 p-8 flex items-center justify-center">
-                <Card className="w-full max-w-md shadow-lg text-center p-6">
+            <div className="min-h-screen bg-transparent p-8 flex items-center justify-center">
+                <Card className="glass-panel w-full max-w-md text-center p-8 border-slate-700">
                     <CardHeader>
-                        <CardTitle>Wallet Disconnected</CardTitle>
-                        <CardDescription>You must connect your wallet to mint assets on XRPL.</CardDescription>
+                        <CardTitle className="text-white">Wallet Disconnected</CardTitle>
+                        <CardDescription className="text-slate-400">You must connect your wallet to mint assets on XRPL.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button onClick={connectWallet} className="w-full">
+                        <Button onClick={connectWallet} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white">
                             Connect Wallet
                         </Button>
                     </CardContent>
@@ -141,19 +141,19 @@ export default function CreateAssetPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 p-8 flex items-center justify-center">
-            <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-8 items-start">
+        <div className="min-h-screen bg-transparent p-8 flex items-center justify-center">
+            <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-start">
 
                 {/* Left: The Form */}
-                <Card className="shadow-lg border-t-4 border-t-emerald-500">
+                <Card className="glass-panel border-t-4 border-t-emerald-500 bg-slate-900/60 backdrop-blur-xl border-x-slate-800 border-b-slate-800 shadow-2xl">
                     <CardHeader>
-                        <div className="flex items-center gap-2 text-emerald-600 mb-2">
+                        <div className="flex items-center gap-2 text-emerald-400 mb-2">
                             <Stethoscope className="w-6 h-6" />
                             <span className="font-bold tracking-tight">XRPulse Asset Studio</span>
                         </div>
-                        <CardTitle className="text-2xl">List New Medical Equipment</CardTitle>
-                        <CardDescription>
-                            create a digital twin (RWA) of your machine to raise capital in RLUSD.
+                        <CardTitle className="text-2xl text-white">List New Medical Equipment</CardTitle>
+                        <CardDescription className="text-slate-400">
+                            Create a digital twin (RWA) of your machine to raise capital in RLUSD.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -161,7 +161,7 @@ export default function CreateAssetPage() {
 
                             {/* Image URL (Mock Upload) */}
                             <div className="space-y-2">
-                                <Label htmlFor="imageUrl">Equipment Image URL</Label>
+                                <Label htmlFor="imageUrl" className="text-slate-200">Equipment Image URL</Label>
                                 <div className="relative">
                                     <Input
                                         id="imageUrl"
@@ -169,9 +169,9 @@ export default function CreateAssetPage() {
                                         placeholder="https://..."
                                         value={formData.imageUrl}
                                         onChange={handleChange}
-                                        className="pl-10"
+                                        className="pl-10 bg-slate-950/50 border-slate-700 text-slate-200 placeholder:text-slate-600 focus:ring-emerald-500/50 focus:border-emerald-500"
                                     />
-                                    <UploadCloud className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                                    <UploadCloud className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
                                 </div>
                                 <p className="text-xs text-slate-500">Paste a direct link to an image (Unsplash, Supabase Storage, etc).</p>
                             </div>
@@ -179,7 +179,7 @@ export default function CreateAssetPage() {
                             {/* Basic Info */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="title">Equipment Name</Label>
+                                    <Label htmlFor="title" className="text-slate-200">Equipment Name</Label>
                                     <Input
                                         id="title"
                                         name="title"
@@ -187,10 +187,11 @@ export default function CreateAssetPage() {
                                         required
                                         value={formData.title}
                                         onChange={handleChange}
+                                        className="bg-slate-950/50 border-slate-700 text-slate-200 placeholder:text-slate-600 focus:ring-emerald-500/50 focus:border-emerald-500"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="fundingGoal">Funding Goal (RLUSD)</Label>
+                                    <Label htmlFor="fundingGoal" className="text-slate-200">Funding Goal (RLUSD)</Label>
                                     <Input
                                         id="fundingGoal"
                                         name="fundingGoal"
@@ -199,17 +200,18 @@ export default function CreateAssetPage() {
                                         required
                                         value={formData.fundingGoal}
                                         onChange={handleChange}
+                                        className="bg-slate-950/50 border-slate-700 text-slate-200 placeholder:text-slate-600 focus:ring-emerald-500/50 focus:border-emerald-500"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description">Clinical Description & Impact</Label>
+                                <Label htmlFor="description" className="text-slate-200">Clinical Description & Impact</Label>
                                 <Textarea
                                     id="description"
                                     name="description"
                                     placeholder="Describe the medical capability and patient impact..."
-                                    className="h-24"
+                                    className="h-24 bg-slate-950/50 border-slate-700 text-slate-200 placeholder:text-slate-600 focus:ring-emerald-500/50 focus:border-emerald-500 resize-none"
                                     required
                                     value={formData.description}
                                     onChange={handleChange}
@@ -217,7 +219,7 @@ export default function CreateAssetPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="roi">Estimated Annual Yield (%)</Label>
+                                <Label htmlFor="roi" className="text-slate-200">Estimated Annual Yield (%)</Label>
                                 <Input
                                     id="roi"
                                     name="roi"
@@ -227,12 +229,13 @@ export default function CreateAssetPage() {
                                     required
                                     value={formData.roi}
                                     onChange={handleChange}
+                                    className="bg-slate-950/50 border-slate-700 text-slate-200 placeholder:text-slate-600 focus:ring-emerald-500/50 focus:border-emerald-500"
                                 />
                                 <p className="text-xs text-slate-500">Based on projected lease payments from the clinic.</p>
                             </div>
 
-                            <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 h-11" disabled={isLoading}>
-                                {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                            <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 border border-emerald-500/50 h-12 text-base font-medium" disabled={isLoading}>
+                                {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
                                 Create & Mint Asset
                             </Button>
 
@@ -241,8 +244,8 @@ export default function CreateAssetPage() {
                 </Card>
 
                 {/* Right: The Preview */}
-                <div className="space-y-4 lg:sticky lg:top-8">
-                    <div className="flex items-center gap-2 text-slate-500 px-1">
+                <div className="space-y-6 lg:sticky lg:top-8">
+                    <div className="flex items-center gap-2 text-slate-400 px-1">
                         <Eye className="w-4 h-4" />
                         <span className="text-sm font-medium uppercase tracking-wider">Live Preview</span>
                     </div>
@@ -256,14 +259,14 @@ export default function CreateAssetPage() {
                         roi={parseFloat(formData.roi) || 8.5}
                         status="draft"
                         actionLabel="Minting (Preview)"
-                        className="shadow-2xl ring-1 ring-slate-900/5"
+                        className="shadow-2xl shadow-black/50"
                     />
 
-                    <div className="bg-blue-50 text-blue-800 p-4 rounded-lg text-sm border border-blue-100">
-                        <p className="font-semibold mb-1">What happens next?</p>
-                        <ul className="list-disc list-inside space-y-1 opacity-90">
+                    <div className="bg-blue-950/30 text-blue-200 p-6 rounded-xl text-sm border border-blue-500/20 backdrop-blur-md">
+                        <p className="font-semibold mb-2 text-blue-100">What happens next?</p>
+                        <ul className="list-disc list-inside space-y-1.5 opacity-80">
                             <li>This Asset draft will be saved to Supabase.</li>
-                            <li><span className="font-mono text-xs bg-blue-100 px-1 rounded">Phase 4</span> Logic will trigger.</li>
+                            <li><span className="font-mono text-xs bg-blue-500/20 border border-blue-500/30 px-1.5 py-0.5 rounded text-blue-300">Phase 4</span> Logic will trigger.</li>
                             <li>We will mint a <strong>URIToken</strong> on XRPL.</li>
                             <li>We will issue <strong>Fractional Tokens</strong>.</li>
                         </ul>

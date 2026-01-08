@@ -7,7 +7,7 @@ import { ConnectWalletButton } from "@/components/auth/connect-wallet-button"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { AssetCard } from "@/components/assets/asset-card"
-import { Loader2, SearchX, PieChart } from "lucide-react"
+import { Loader2, SearchX, PieChart, Activity, Globe2 } from "lucide-react"
 import { TrustLineModal } from "@/components/invest/trustline-modal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -108,10 +108,10 @@ export default function InvestorDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            <header className="px-8 py-6 flex justify-between items-center border-b bg-white sticky top-0 z-10 w-full backdrop-blur-md bg-white/80">
+        <div className="min-h-screen bg-transparent text-slate-100">
+            <header className="px-8 py-6 flex justify-between items-center border-b border-slate-800/50 sticky top-0 z-10 w-full backdrop-blur-md bg-slate-950/80">
                 <div className="flex items-center gap-4">
-                    <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                    <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">
                         XRPulse Marketplace
                     </h1>
                 </div>
@@ -119,33 +119,43 @@ export default function InvestorDashboard() {
             </header>
 
             <main className="p-8 max-w-7xl mx-auto">
-                <div className="mb-8">
-                    <h2 className="text-3xl font-bold text-slate-800">
-                        Welcome, {isConnected ? (profile?.name || 'Investor') : 'Guest'}
+                <div className="mb-10 text-center md:text-left">
+                    <h2 className="text-4xl font-bold text-white tracking-tight">
+                        Welcome, <span className="text-emerald-400">{isConnected ? (profile?.name || 'Investor') : 'Guest'}</span>
                     </h2>
-                    <p className="text-slate-600 mt-2 text-lg">
+                    <p className="text-slate-400 mt-2 text-lg max-w-2xl">
                         Discover and fund high-yield medical infrastructure assets powered by XRPL.
                     </p>
                 </div>
 
                 <Tabs defaultValue="marketplace" className="w-full space-y-8">
-                    <TabsList className="bg-white p-1 h-auto border">
-                        <TabsTrigger value="marketplace" className="px-6 py-2">Marketplace</TabsTrigger>
-                        <TabsTrigger value="portfolio" className="px-6 py-2">My Portfolio</TabsTrigger>
+                    <TabsList className="bg-slate-900/50 p-1 h-auto border border-slate-800 rounded-full">
+                        <TabsTrigger
+                            value="marketplace"
+                            className="px-6 py-2 rounded-full data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-slate-400 hover:text-slate-200"
+                        >
+                            Marketplace
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="portfolio"
+                            className="px-6 py-2 rounded-full data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-slate-400 hover:text-slate-200"
+                        >
+                            My Portfolio
+                        </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="marketplace" className="space-y-6">
                         {isLoading ? (
                             <div className="flex justify-center items-center h-64">
-                                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                                <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
                             </div>
                         ) : assets.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-dashed border-slate-300">
-                                <div className="bg-slate-50 p-4 rounded-full mb-4">
-                                    <SearchX className="w-8 h-8 text-slate-400" />
+                            <div className="flex flex-col items-center justify-center py-24 bg-slate-900/40 rounded-3xl border border-dashed border-slate-700">
+                                <div className="bg-slate-800/50 p-6 rounded-full mb-6">
+                                    <SearchX className="w-10 h-10 text-slate-500" />
                                 </div>
-                                <h3 className="text-xl font-medium text-slate-800">No active assets found</h3>
-                                <p className="text-slate-500 max-w-sm text-center">There are currently no medical assets open for funding. Check back later.</p>
+                                <h3 className="text-2xl font-medium text-slate-200">No active assets found</h3>
+                                <p className="text-slate-500 max-w-md text-center mt-2">There are currently no medical assets open for funding. Check back later.</p>
                             </div>
                         ) : (
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -173,13 +183,16 @@ export default function InvestorDashboard() {
 
                     <TabsContent value="portfolio">
                         {portfolio.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-dashed border-slate-300">
-                                <div className="bg-slate-50 p-4 rounded-full mb-4">
-                                    <PieChart className="w-8 h-8 text-slate-400" />
+                            <div className="flex flex-col items-center justify-center py-24 bg-slate-900/40 rounded-3xl border border-dashed border-slate-700">
+                                <div className="bg-slate-800/50 p-6 rounded-full mb-6">
+                                    <PieChart className="w-10 h-10 text-slate-500" />
                                 </div>
-                                <h3 className="text-xl font-medium text-slate-800">Your portfolio is empty</h3>
-                                <p className="text-slate-500 mb-6 text-center max-w-sm">You haven&apos;t invested in any assets yet. Start building your medical real estate portfolio today.</p>
-                                <Button onClick={() => (document.querySelector('[value="marketplace"]') as HTMLElement)?.click()}>
+                                <h3 className="text-2xl font-medium text-slate-200">Your portfolio is empty</h3>
+                                <p className="text-slate-500 mb-8 text-center max-w-md mt-2">You haven&apos;t invested in any assets yet. Start building your medical real estate portfolio today.</p>
+                                <Button
+                                    onClick={() => (document.querySelector('[value="marketplace"]') as HTMLElement)?.click()}
+                                    className="bg-emerald-600 hover:bg-emerald-500 text-white"
+                                >
                                     Browse Marketplace
                                 </Button>
                             </div>
@@ -211,7 +224,39 @@ export default function InvestorDashboard() {
                 asset={selectedAsset}
                 open={isModalOpen}
                 onOpenChange={setIsModalOpen}
+                onSuccess={() => {
+                    fetchPortfolio()
+                    fetchMarketplace()
+                    // Optional: Switch to portfolio tab to show the new item
+                    const portfolioTab = document.querySelector('[value="portfolio"]') as HTMLElement
+                    if (portfolioTab) portfolioTab.click()
+                }}
             />
+
+            {/* Feature Highlights (Footer) */}
+            <div className="max-w-7xl mx-auto px-8 pb-12 mt-12 grid md:grid-cols-3 gap-6 opacity-60 hover:opacity-100 transition-opacity duration-500">
+                <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Activity className="w-5 h-5 text-emerald-500" />
+                        <h4 className="font-bold text-slate-200">Transparency</h4>
+                    </div>
+                    <p className="text-xs text-slate-400">Real-time tracking of funds and asset performance on the ledger.</p>
+                </div>
+                <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Globe2 className="w-5 h-5 text-blue-500" />
+                        <h4 className="font-bold text-slate-200">Global Access</h4>
+                    </div>
+                    <p className="text-xs text-slate-400">Seamless cross-border investment opportunities without barriers.</p>
+                </div>
+                <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40">
+                    <div className="flex items-center gap-2 mb-2">
+                        <PieChart className="w-5 h-5 text-purple-500" />
+                        <h4 className="font-bold text-slate-200">Fractional Investing</h4>
+                    </div>
+                    <p className="text-xs text-slate-400">Invest in high-value medical equipment with accessible entry points.</p>
+                </div>
+            </div>
         </div>
     )
 }

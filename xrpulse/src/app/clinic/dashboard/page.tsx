@@ -6,7 +6,7 @@ import { ConnectWalletButton } from "@/components/auth/connect-wallet-button"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { AssetCard } from "@/components/assets/asset-card"
-import { Loader2, PlusCircle } from "lucide-react"
+import { Loader2, PlusCircle, Activity, Globe2, PieChart } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 
@@ -77,25 +77,25 @@ export default function ClinicDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            <header className="px-8 py-6 flex justify-between items-center border-b bg-white relative z-10 shadow-sm">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold">C</div>
-                    <h1 className="text-xl font-bold tracking-tight">Clinic<span className="text-slate-400 font-normal">Console</span></h1>
+        <div className="min-h-screen bg-transparent text-slate-100">
+            <header className="px-8 py-6 flex justify-between items-center border-b border-slate-800/50 sticky top-0 z-10 w-full backdrop-blur-md bg-slate-950/80 shadow-sm">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-emerald-500/20">C</div>
+                    <h1 className="text-xl font-bold tracking-tight text-white">Clinic<span className="text-slate-500 font-normal">Console</span></h1>
                 </div>
                 <ConnectWalletButton />
             </header>
 
-            <main className="p-8 max-w-7xl mx-auto space-y-8">
+            <main className="p-8 max-w-7xl mx-auto space-y-10">
                 {/* Header Action */}
-                <div className="flex justify-between items-end">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 glass-panel p-8 rounded-3xl">
                     <div>
-                        <h2 className="text-3xl font-bold text-slate-900">Your Equipment</h2>
-                        <p className="text-slate-500 mt-1">Manage your tokenized real-world assets.</p>
+                        <h2 className="text-3xl font-bold text-white tracking-tight">Your Equipment</h2>
+                        <p className="text-slate-400 mt-2 text-lg">Manage your tokenized real-world assets and liquidity.</p>
                     </div>
                     <Link href="/clinic/create">
-                        <Button className="bg-emerald-600 hover:bg-emerald-700">
-                            <PlusCircle className="w-4 h-4 mr-2" />
+                        <Button className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 border border-emerald-500/50 h-12 px-6 text-base">
+                            <PlusCircle className="w-5 h-5 mr-2" />
                             List New Asset
                         </Button>
                     </Link>
@@ -104,23 +104,23 @@ export default function ClinicDashboard() {
                 {/* Content */}
                 {isLoading ? (
                     <div className="flex justify-center py-20">
-                        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+                        <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
                     </div>
                 ) : !walletAddress ? (
-                    <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
-                        <h3 className="text-lg font-medium text-slate-800">Wallet Not Connected</h3>
-                        <p className="text-slate-500 mb-6">Connect your wallet to view your equipment.</p>
+                    <div className="text-center py-24 glass-panel rounded-3xl border-dashed border-slate-700">
+                        <h3 className="text-2xl font-medium text-slate-200">Wallet Not Connected</h3>
+                        <p className="text-slate-500 mb-8 mt-2 max-w-md mx-auto">Connect your wallet to view your equipment and manage your assets.</p>
                         <ConnectWalletButton />
                     </div>
                 ) : assets.length === 0 ? (
-                    <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
-                        <p className="text-slate-400 mb-4">No assets found for this wallet.</p>
+                    <div className="text-center py-24 glass-panel rounded-3xl border-dashed border-slate-700">
+                        <p className="text-slate-400 mb-6 text-lg">No assets found for this wallet.</p>
                         <Link href="/clinic/create">
-                            <Button variant="outline">Create your first Asset</Button>
+                            <Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">Create your first Asset</Button>
                         </Link>
                     </div>
                 ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {assets.map((asset) => (
                             <AssetCard
                                 key={asset.id}
@@ -137,6 +137,31 @@ export default function ClinicDashboard() {
                         ))}
                     </div>
                 )}
+
+                {/* Feature Highlights (Footer) */}
+                <div className="pb-12 mt-12 grid md:grid-cols-3 gap-6 opacity-60 hover:opacity-100 transition-opacity duration-500">
+                    <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Activity className="w-5 h-5 text-emerald-500" />
+                            <h4 className="font-bold text-slate-200">Transparency</h4>
+                        </div>
+                        <p className="text-xs text-slate-400">Real-time tracking of funds and asset performance on the ledger.</p>
+                    </div>
+                    <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Globe2 className="w-5 h-5 text-blue-500" />
+                            <h4 className="font-bold text-slate-200">Global Access</h4>
+                        </div>
+                        <p className="text-xs text-slate-400">Seamless cross-border investment opportunities without barriers.</p>
+                    </div>
+                    <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40">
+                        <div className="flex items-center gap-2 mb-2">
+                            <PieChart className="w-5 h-5 text-purple-500" />
+                            <h4 className="font-bold text-slate-200">Fractional Investing</h4>
+                        </div>
+                        <p className="text-xs text-slate-400">Invest in high-value medical equipment with accessible entry points.</p>
+                    </div>
+                </div>
             </main>
         </div>
     )

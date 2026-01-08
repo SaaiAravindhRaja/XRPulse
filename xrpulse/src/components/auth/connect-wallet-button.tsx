@@ -25,7 +25,7 @@ export function ConnectWalletButton() {
         <Button
             onClick={connectWallet}
             disabled={isLoading}
-            className="bg-slate-900 text-white hover:bg-slate-800"
+            className="bg-slate-800 text-white hover:bg-slate-700 border border-slate-700 shadow-sm"
         >
             {isLoading ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />

@@ -36,17 +36,23 @@ function RoleCard({ icon, title, description, onClick, color }: any) {
         <Card
             onClick={onClick}
             className={cn(
-                "cursor-pointer transition-all hover:scale-[1.02] border-2 border-transparent hover:border-primary/20",
-                color === "blue" ? "hover:shadow-blue-500/10" : "hover:shadow-emerald-500/10"
+                "cursor-pointer transition-all duration-300 hover:scale-[1.02] border border-slate-700 bg-slate-900/50 backdrop-blur-md",
+                color === "blue" ? "hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10" : "hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-500/10"
             )}
         >
             <CardHeader>
-                <div className="mb-4 p-3 bg-slate-50 w-fit rounded-xl">{icon}</div>
-                <CardTitle className="text-xl">{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
+                <div className={cn("mb-4 p-3 w-fit rounded-xl backdrop-blur-sm border",
+                    color === "blue" ? "bg-blue-500/10 border-blue-500/20" : "bg-emerald-500/10 border-emerald-500/20"
+                )}>
+                    {icon}
+                </div>
+                <CardTitle className="text-xl text-white">{title}</CardTitle>
+                <CardDescription className="text-slate-400">{description}</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="flex items-center text-sm font-medium text-slate-600 group">
+                <div className={cn("flex items-center text-sm font-medium group",
+                    color === "blue" ? "text-blue-400" : "text-emerald-400"
+                )}>
                     Get Started <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                 </div>
             </CardContent>
