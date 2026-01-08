@@ -50,7 +50,8 @@ export async function recordInvestment(
     assetId: string,
     investorWallet: string,
     shares: number,
-    amountPaid: number
+    amountPaid: number,
+    txHash: string
 ) {
     console.log(`💰 Recording Investment: ${shares} shares for ${amountPaid} RLUSD`)
 
@@ -58,8 +59,9 @@ export async function recordInvestment(
     const { error: investError } = await supabase.from('investments').insert({
         asset_id: assetId,
         investor_wallet: investorWallet,
-        amount_invested: amountPaid,
-        tokens_received: shares
+        amount_tokens: shares,
+        amount_rlusd: amountPaid,
+        tx_hash: txHash
     })
 
     if (investError) throw new Error("Investment Record Failed: " + investError.message)

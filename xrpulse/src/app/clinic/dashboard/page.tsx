@@ -43,11 +43,11 @@ export default function ClinicDashboard() {
             const enrichedData = await Promise.all((assetsData || []).map(async (asset) => {
                 const { data: investments } = await supabase
                     .from('investments')
-                    .select('amount_invested')
+                    .select('amount_rlusd')
                     .eq('asset_id', asset.id)
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const totalFunding = investments?.reduce((sum, inv: any) => sum + inv.amount_invested, 0) || 0
+                const totalFunding = investments?.reduce((sum, inv: any) => sum + inv.amount_rlusd, 0) || 0
                 return { ...asset, calculated_funding: totalFunding }
             }))
 

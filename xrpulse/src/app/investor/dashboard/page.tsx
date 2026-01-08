@@ -43,7 +43,7 @@ export default function InvestorDashboard() {
             // 2. Fetch All Investments (optimization: get all instead of N requests)
             const { data: investmentsData } = await supabase
                 .from('investments')
-                .select('asset_id, amount_invested')
+                .select('asset_id, amount_rlusd')
 
             // 3. Merge
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,7 +51,7 @@ export default function InvestorDashboard() {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const assetInvestments = investmentsData?.filter((inv: any) => inv.asset_id === asset.id) || []
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const totalFunding = assetInvestments.reduce((sum: number, inv: any) => sum + inv.amount_invested, 0)
+                const totalFunding = assetInvestments.reduce((sum: number, inv: any) => sum + inv.amount_rlusd, 0)
                 return { ...asset, calculated_funding: totalFunding }
             })
 
@@ -80,7 +80,7 @@ export default function InvestorDashboard() {
             // 2. Get Global Funding Layout (to show progress on card correctly)
             const { data: allInvestments } = await supabase
                 .from('investments')
-                .select('asset_id, amount_invested')
+                .select('asset_id, amount_rlusd')
 
             // 3. Map
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,13 +91,13 @@ export default function InvestorDashboard() {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     ?.filter((i: any) => i.asset_id === inv.asset.id)
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    ?.reduce((sum: number, i: any) => sum + i.amount_invested, 0) || 0
+                    ?.reduce((sum: number, i: any) => sum + i.amount_rlusd, 0) || 0
 
                 return {
                     ...inv.asset,
                     calculated_funding: assetTotalFunding,
-                    my_shares: inv.tokens_received,
-                    my_invested: inv.amount_invested
+                    my_shares: inv.amount_tokens,
+                    my_invested: inv.amount_rlusd
                 }
             }) || []
 

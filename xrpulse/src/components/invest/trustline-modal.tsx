@@ -94,7 +94,9 @@ export function TrustLineModal({ asset, open, onOpenChange }: TrustLineModalProp
 
             // 3. Database: Record Investment
             // -----------------------------------------------------
-            await recordInvestment(asset.id, walletAddress, shares, totalCost)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const txHash = (payResult.result as any).hash || signedPay.hash
+            await recordInvestment(asset.id, walletAddress, shares, totalCost, txHash)
 
             setIsSuccess(true)
             toast.success("Investment Recorded!")
