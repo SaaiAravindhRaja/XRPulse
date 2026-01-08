@@ -6,16 +6,22 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useWallet } from "@/context/wallet-context"
-import { Loader2, UploadCloud, Stethoscope, Eye } from "lucide-react"
-import { useState } from "react"
+import { Loader2, UploadCloud, Stethoscope, Eye, X } from "lucide-react"
+import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { AssetCard } from "@/components/assets/asset-card"
+import { useDropzone } from "react-dropzone"
+import { supabase } from "@/lib/supabase"
+import Image from "next/image"
+import { useToast } from "@/hooks/use-toast"
 
 // Buffer polyfill for browser if needed
 export default function CreateAssetPage() {
     const { walletAddress, isConnected, wallet, connectWallet } = useWallet()
     const router = useRouter()
+    const { toast } = useToast()
     const [isLoading, setIsLoading] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
 
     // Form State
     const [formData, setFormData] = useState({
@@ -24,6 +30,70 @@ export default function CreateAssetPage() {
         fundingGoal: '',
         roi: '',
         imageUrl: ''
+    })
+
+    // Upload Logic
+    const onDrop = useCallback(async (acceptedFiles: File[]) => {
+        const file = acceptedFiles[0]
+        if (!file) return
+
+        setIsUploading(true)
+        try {
+            const fileExt = file.name.split('.').pop()
+            const fileName = `${Math.random()}.${fileExt}`
+            const filePath = `${walletAddress || 'anon'}/${fileName}`
+
+            const { error: uploadError } = await supabase.storage
+                .from('assets')
+                .upload(filePath, file)
+
+            if (uploadError) {
+                console.error("Upload error details:", uploadError); // Log the full error object
+                throw new Error(uploadError.message) // Throw the message
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('assets')
+                .getPublicUrl(filePath)
+
+            setFormData(prev => ({ ...prev, imageUrl: publicUrl }))
+            toast({ title: "Image Uploaded", description: "Successfully uploaded asset image." })
+        } catch (error) {
+            console.error("Upload failed", error)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const errorMessage = (error as any).message || "Unknown error occurred";
+
+            if (errorMessage.includes("row violates row-level security policy")) {
+                toast({
+                    title: "Upload Permission Denied",
+                    description: "Supabase RLS Policy error. Please ensure you are logged in and the 'assets' bucket allows uploads.",
+                    variant: "destructive"
+                })
+            } else if (errorMessage.includes("The resource was not found")) {
+                toast({
+                    title: "Bucket Not Found",
+                    description: "The 'assets' bucket does not exist. Please create it in your Supabase dashboard.",
+                    variant: "destructive"
+                })
+            } else {
+                toast({
+                    title: "Upload Failed",
+                    description: errorMessage,
+                    variant: "destructive"
+                })
+            }
+        } finally {
+            setIsUploading(false)
+        }
+    }, [walletAddress, toast])
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept: {
+            'image/*': ['.png', '.jpg', '.jpeg', '.webp']
+        },
+        maxFiles: 1,
+        disabled: isUploading
     })
 
     // Handlers
@@ -35,7 +105,11 @@ export default function CreateAssetPage() {
         e.preventDefault()
         if (!walletAddress || !wallet) return
 
-        setIsLoading(true)
+        if (!formData.imageUrl) {
+            toast({ title: "Image Required", description: "Please upload an image for the asset.", variant: "destructive" })
+            return
+        }
+
         setIsLoading(true)
         try {
 
@@ -67,7 +141,7 @@ export default function CreateAssetPage() {
                 TransactionType: "NFTokenMint",
                 Account: wallet.address,
                 URI: hexURI,
-                Flags: 8,
+                Flags: 8, // tfTransferable
                 NFTokenTaxon: 0,
             }
 
@@ -82,11 +156,11 @@ export default function CreateAssetPage() {
                 throw new Error(`XRPL Mint Failed: ${(result.result.meta as any).TransactionResult}`)
             }
 
-            // Extract NFTokenID
+            // Extract NFTokenID (Approximate for this demo, usually parsed from metadata)
             const dummyTokenID = "00080000" + signed.hash.slice(0, 56)
 
 
-            // 3. XRPL: Define Fractional Token
+            // 3. XRPL: Define Fractional Token (Concept only for this step)
             // ----------------------------------------------------------------
             const currencyCode = "PLS"
 
@@ -102,7 +176,7 @@ export default function CreateAssetPage() {
                 funding_goal_rlusd: parseFloat(formData.fundingGoal),
                 share_price_rlusd: parseFloat(formData.fundingGoal) / 1000,
                 total_shares: 1000,
-                image_url: formData.imageUrl || 'https://images.unsplash.com/photo-1516549655169-df83a0774514',
+                image_url: formData.imageUrl,
                 status: 'funding',
                 token_id: dummyTokenID,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,11 +186,12 @@ export default function CreateAssetPage() {
 
 
             // 5. Success!
+            toast({ title: "Asset Minted!", description: "Redirecting to dashboard..." })
             router.push('/clinic/dashboard')
 
         } catch (error) {
             console.error("Minting Failed", error)
-            alert("Minting Failed! See console.")
+            toast({ title: "Minting Failed", description: "Check console for details.", variant: "destructive" })
         } finally {
             setIsLoading(false)
         }
@@ -159,21 +234,55 @@ export default function CreateAssetPage() {
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-6">
 
-                            {/* Image URL (Mock Upload) */}
+                            {/* Image Upload Area */}
                             <div className="space-y-2">
-                                <Label htmlFor="imageUrl" className="text-slate-200">Equipment Image URL</Label>
-                                <div className="relative">
-                                    <Input
-                                        id="imageUrl"
-                                        name="imageUrl"
-                                        placeholder="https://..."
-                                        value={formData.imageUrl}
-                                        onChange={handleChange}
-                                        className="pl-10 bg-slate-950/50 border-slate-700 text-slate-200 placeholder:text-slate-600 focus:ring-emerald-500/50 focus:border-emerald-500"
-                                    />
-                                    <UploadCloud className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
-                                </div>
-                                <p className="text-xs text-slate-500">Paste a direct link to an image (Unsplash, Supabase Storage, etc).</p>
+                                <Label className="text-slate-200">Equipment Image</Label>
+
+                                {formData.imageUrl ? (
+                                    <div className="relative w-full h-48 rounded-lg overflow-hidden border border-slate-700 group">
+                                        <Image
+                                            src={formData.imageUrl}
+                                            alt="Preview"
+                                            fill
+                                            className="object-cover transition-opacity group-hover:opacity-75"
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50">
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => setFormData(prev => ({ ...prev, imageUrl: '' }))}
+                                                className="gap-2"
+                                            >
+                                                <X className="w-4 h-4" /> Remove
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        {...getRootProps()}
+                                        className={`border-2 border-dashed rounded-lg h-48 flex flex-col items-center justify-center cursor-pointer transition-all duration-200
+                                            ${isDragActive ? 'border-emerald-500 bg-emerald-500/10' : 'border-slate-700 hover:border-slate-500 hover:bg-slate-800/50'}
+                                            ${isUploading ? 'pointer-events-none opacity-50' : ''}
+                                        `}
+                                    >
+                                        <input {...getInputProps()} />
+                                        {isUploading ? (
+                                            <div className="flex flex-col items-center animate-pulse text-emerald-500">
+                                                <Loader2 className="w-8 h-8 animate-spin mb-2" />
+                                                <p className="text-sm">Uploading to IPFS/Storage...</p>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col items-center text-slate-400 text-center p-4">
+                                                <div className="p-3 bg-slate-800 rounded-full mb-3">
+                                                    <UploadCloud className="w-6 h-6 text-emerald-500" />
+                                                </div>
+                                                <p className="font-medium text-slate-200 mb-1">Click or drag image here</p>
+                                                <p className="text-xs text-slate-500">Supports JPG, PNG, WEBP (Max 5MB)</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Basic Info */}
